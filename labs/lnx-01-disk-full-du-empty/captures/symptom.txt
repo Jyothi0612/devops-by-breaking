@@ -1,0 +1,16 @@
+# captured 2026-11-15 from a fresh `./dbb start lnx-01` (Rocky Linux 9.8, arm64)
+$ df -h /var/log/app
+Filesystem      Size  Used Avail Use% Mounted on
+tmpfs            64M   64M     0 100% /var/log/app
+
+$ du -sh /var/log/app
+0	/var/log/app
+
+$ ls -la /var/log/app
+total 8
+drwxrwxrwt 2 root root   40 Nov 15 13:24 .
+drwxr-xr-x 1 root root 4096 Nov 15 13:24 ..
+
+$ lsof +L1
+COMMAND   PID USER   FD   TYPE DEVICE SIZE/OFF NLINK NODE NAME
+orders-ap  74 root    3w   REG  0,103 67108864     0    2 /var/log/app/orders.log (deleted)

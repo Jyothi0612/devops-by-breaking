@@ -1,0 +1,21 @@
+Terraform tracks each resource by its address: `random_password.db`. You changed the
+address in the code. Terraform cannot know that `random_password.orders_db` is the same
+real object, so it sees one resource removed and one resource added. Run the plan and
+read exactly which addresses it wants to destroy and create:
+
+    terraform plan
+---
+There are two ways to tell Terraform "this is the same object under a new address".
+One is a command that edits the state. The other is a block you write in the
+configuration, which is reviewed in the pull request like any other code.
+
+    terraform state mv -help
+    # and search the docs for: moved block
+---
+Add this to main.tf, then run `terraform plan`. It should say the resource "has moved"
+and show 0 to add, 0 to destroy. Apply it to record the move.
+
+    moved {
+      from = random_password.db
+      to   = random_password.orders_db
+    }

@@ -1,0 +1,18 @@
+`df` asks the filesystem how many blocks are in use. `du` walks the directory tree and
+adds up the files it can see. When they disagree, something is using space that has no
+name in the directory tree any more. What happens to a file's data when you `rm` it
+while a program still has it open?
+---
+List open files that have been deleted:
+
+    lsof +L1
+
+or look at one process directly:
+
+    ls -l /proc/<pid>/fd
+
+Which process is it, and how big is the file it is holding?
+---
+Restarting orders-api would free the space, but the ticket says it must not be restarted.
+Read its unit file: `systemctl cat orders-api`. It has an `ExecReload=` line. What does
+`systemctl reload` ask the process to do with its log file?

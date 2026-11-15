@@ -1,0 +1,316 @@
+#!/usr/bin/env bash
+# dbb — devops-by-breaking. Every lab starts broken. Fix it, then prove it.
+# Works with bash 3.2 (the macOS default). Needs only Docker, bash and git.
+set -u
+
+DBB_ROOT="$(cd "$(dirname "$0")" && pwd)"
+export DBB_ROOT
+for _f in core check server k8s terraform verify; do
+  # shellcheck source=/dev/null
+  . "$DBB_ROOT/lib/$_f.sh"
+done
+
+# Exit codes: 0 = ok / all checks pass, 1 = a check failed, 2 = usage or environment error.
+
+usage() {
+  cat <<EOF
+${C_BLD}dbb${C_OFF} — learn DevOps by fixing real breakages
+
+  ./dbb doctor              is this machine ready?
+  ./dbb list                all labs   [--track T] [--level N] [--tag T] [--json]
+  ./dbb next                the next lab you have not solved
+  ./dbb start <id>          start a lab in its broken state and show the ticket
+  ./dbb shell               open a shell where the problem is
+  ./dbb exec -- <command>   run one command there (no terminal needed)
+  ./dbb hint                show the next hint (there are 3)
+  ./dbb check               is it really fixed?   [--json]
+  ./dbb reset               put the lab back to its broken state
+  ./dbb solution            root cause, fix and prevention
+  ./dbb status              current lab, time spent, hints used   [--json]
+  ./dbb stop                remove everything the lab created
+  ./dbb nuke                remove everything dbb ever created on this machine
+  ./dbb verify <id>|all     maintainers / CI: prove a lab breaks and can be fixed
+EOF
+}
+
+need_docker() {
+  command -v docker >/dev/null 2>&1 || die "docker is not installed"
+  docker info >/dev/null 2>&1 || die "docker is installed but not running"
+}
+
+has_flag() { # has_flag --json "$@"
+  local want="$1" a; shift
+  for a in "$@"; do [ "$a" = "$want" ] && return 0; done
+  return 1
+}
+
+flag_value() { # flag_value --track "$@"
+  local want="$1" a prev=""; shift
+  for a in "$@"; do
+    [ "$prev" = "$want" ] && { printf '%s\n' "$a"; return 0; }
+    prev="$a"
+  done
+  return 1
+}
+
+is_solved() { [ -f "$DBB_DIR/progress" ] && grep -q "^$1 " "$DBB_DIR/progress"; }
+
+# ---------------------------------------------------------------- doctor
+
+cmd_doctor() {
+  local bad=0 mem arch cg
+  say "${C_BLD}Checking this machine${C_OFF}"
+  if ! command -v docker >/dev/null 2>&1; then
+    say "  ${C_RED}FAIL${C_OFF}  docker is not installed"; return 2
+  fi
+  if ! docker info >/dev/null 2>&1; then
+    say "  ${C_RED}FAIL${C_OFF}  docker is installed but not running. Start Docker and retry."; return 2
+  fi
+  say "  ${C_GRN}ok${C_OFF}    docker $(docker version --format '{{.Server.Version}}')"
+  cg="$(docker info --format '{{.CgroupVersion}}')"
+  if [ "$cg" = "2" ]; then say "  ${C_GRN}ok${C_OFF}    cgroup v2"
+  else say "  ${C_RED}FAIL${C_OFF}  cgroup v$cg: the systemd and Kubernetes labs need cgroup v2"; bad=1; fi
+  arch="$(docker info --format '{{.Architecture}}')"
+  case "$arch" in
+    aarch64|arm64|x86_64|amd64) say "  ${C_GRN}ok${C_OFF}    architecture $arch" ;;
+    *) say "  ${C_YEL}warn${C_OFF}  architecture $arch is untested"; ;;
+  esac
+  mem="$(docker info --format '{{.MemTotal}}')"
+  mem=$(( mem / 1024 / 1024 ))
+  if [ "$mem" -ge 3500 ]; then say "  ${C_GRN}ok${C_OFF}    ${mem} MB memory available to Docker"
+  else say "  ${C_YEL}warn${C_OFF}  only ${mem} MB memory for Docker; Kubernetes labs want 4 GB"; fi
+  say "  ${C_GRN}ok${C_OFF}    bash ${BASH_VERSION}"
+  if command -v git >/dev/null 2>&1; then say "  ${C_GRN}ok${C_OFF}    git"
+  else say "  ${C_RED}FAIL${C_OFF}  git is not installed"; bad=1; fi
+  if [ "$bad" = 0 ]; then say ""; say "Ready. Try: ${C_BLD}./dbb start lnx-01${C_OFF}"; return 0; fi
+  return 2
+}
+
+# ---------------------------------------------------------------- list / next
+
+cmd_list() {
+  local json=0 f_track f_level f_tag id first=1 mark
+  has_flag --json "$@" && json=1
+  f_track="$(flag_value --track "$@")"
+  f_level="$(flag_value --level "$@")"
+  f_tag="$(flag_value --tag "$@")"
+  [ "$json" = 1 ] && printf '['
+  [ "$json" = 1 ] || printf "${C_BLD}%-8s %-11s %-3s %-5s %s${C_OFF}\n" "ID" "TRACK" "LVL" "MIN" "SYMPTOM"
+  for id in $(lab_ids); do
+    lab_load "$id"
+    [ -n "$f_track" ] && [ "$TRACK" != "$f_track" ] && continue
+    [ -n "$f_level" ] && [ "$LEVEL" != "$f_level" ] && continue
+    if [ -n "$f_tag" ]; then case " $TAGS " in *" $f_tag "*) ;; *) continue ;; esac; fi
+    if [ "$json" = 1 ]; then
+      [ "$first" = 1 ] || printf ','
+      first=0
+      printf '{"id":"%s","track":"%s","level":%s,"minutes":%s,"runtime":"%s","tags":"%s","title":"%s","solved":%s}' \
+        "$id" "$TRACK" "$LEVEL" "$MINUTES" "$RUNTIME" "$TAGS" \
+        "$(printf '%s' "$TITLE" | json_escape)" "$(is_solved "$id" && echo true || echo false)"
+    else
+      mark=" "; is_solved "$id" && mark="${C_GRN}✓${C_OFF}"
+      printf "%-8s %-11s %-3s %-5s %s %s\n" "$id" "$TRACK" "L$LEVEL" "$MINUTES" "$TITLE" "$mark"
+    fi
+  done
+  if [ "$json" = 1 ]; then printf ']\n'; fi
+  return 0
+}
+
+cmd_next() {
+  local id
+  for id in $(lab_ids); do
+    is_solved "$id" && continue
+    lab_load "$id"
+    say "Next: ${C_BLD}$id${C_OFF}  $TITLE  (L$LEVEL, about $MINUTES min)"
+    say "      ./dbb start $id"
+    return 0
+  done
+  say "You have solved every lab. Add one: see CONTRIBUTING.md"
+}
+
+# ---------------------------------------------------------------- start / stop / reset
+
+print_ticket() {
+  say ""
+  cat "$LAB_DIR/README.md"
+  say ""
+  say "${C_DIM}────────────────────────────────────────────────────────${C_OFF}"
+  say "  ${C_BLD}./dbb shell${C_OFF}   go and look      ${C_BLD}./dbb hint${C_OFF}    stuck?"
+  say "  ${C_BLD}./dbb check${C_OFF}   is it fixed?     ${C_BLD}./dbb stop${C_OFF}    clean up"
+}
+
+cmd_start() {
+  local id="" a json=0 cur
+  for a in "$@"; do case "$a" in --json) json=1 ;; -*) die "unknown option $a" ;; *) id="$a" ;; esac; done
+  need_docker
+  lab_load "$id"
+  if [ -f "$DBB_DIR/current" ]; then
+    cur="$(cat "$DBB_DIR/current")"
+    [ "$cur" = "$id" ] || die "lab $cur is still running. Stop it first: ./dbb stop"
+  fi
+  [ "$json" = 1 ] || say "Starting ${C_BLD}$id${C_OFF} ... (the first run downloads images and takes a few minutes)"
+  lab_up
+  mkdir -p "$DBB_DIR"; printf '%s\n' "$id" > "$DBB_DIR/current"
+  if [ "$json" = 1 ]; then
+    printf '{"id":"%s","title":"%s","runtime":"%s","ticket":"%s"}\n' "$id" \
+      "$(printf '%s' "$TITLE" | json_escape)" "$RUNTIME" "$(json_escape < "$LAB_DIR/README.md")"
+  else
+    print_ticket
+  fi
+}
+
+cmd_stop() {
+  need_docker
+  lab_load "$(current_lab)"
+  lab_destroy
+  rm -f "$DBB_DIR/current"
+  say "Stopped $LAB_ID. Everything it created is gone."
+}
+
+cmd_reset() {
+  need_docker
+  lab_load "$(current_lab)"
+  say "Resetting $LAB_ID to its broken state ..."
+  lab_up
+  say "Done. It is broken again."
+}
+
+cmd_nuke() {
+  need_docker
+  local ids
+  # shellcheck disable=SC2086
+  {
+  ids="$(docker ps -aq --filter label=dbb.lab)";       [ -z "$ids" ] || docker rm -f -v $ids >/dev/null
+  ids="$(docker network ls -q --filter label=dbb.lab)"; [ -z "$ids" ] || docker network rm $ids >/dev/null
+  ids="$(docker volume ls -q --filter label=dbb.lab)";  [ -z "$ids" ] || docker volume rm -f $ids >/dev/null
+  }
+  rm -rf "$DBB_DIR/current" "$DBB_DIR/state" "$DBB_ROOT/workspace"
+  say "Removed every dbb container, network, volume and workspace. Your progress is kept."
+}
+
+# ---------------------------------------------------------------- shell / exec
+
+cmd_shell() { need_docker; lab_load "$(current_lab)"; rt shell; }
+
+cmd_exec() {
+  [ "${1:-}" = "--" ] && shift
+  [ $# -gt 0 ] || die "usage: ./dbb exec -- <command>"
+  need_docker; lab_load "$(current_lab)"; rt exec "$@"
+}
+
+# ---------------------------------------------------------------- hint / solution
+
+cmd_hint() {
+  lab_load "$(current_lab)"
+  local n total
+  n="$(state_get hints)"; n=$(( ${n:-0} + 1 ))
+  total="$(grep -c '^---$' "$LAB_DIR/hints.txt")"; total=$(( total + 1 ))
+  [ "$n" -gt "$total" ] && n="$total"
+  state_set hints "$n"
+  say "${C_BLD}Hint $n of $total${C_OFF}"
+  awk -v n="$n" 'BEGIN{RS="\n---\n"} NR==n{print}' "$LAB_DIR/hints.txt"
+  [ "$n" -lt "$total" ] || say "${C_DIM}That was the last hint. ./dbb solution shows the full answer.${C_OFF}"
+}
+
+cmd_solution() {
+  lab_load "$(current_lab)"
+  if [ -t 0 ] && ! has_flag --yes "$@"; then
+    printf 'Show the full solution for %s? You learn more by trying a hint first. [y/N] ' "$LAB_ID"
+    local ans; read -r ans
+    case "$ans" in y|Y|yes) ;; *) say "Good call. ./dbb hint"; return 0 ;; esac
+  fi
+  cat "$LAB_DIR/solution/SOLUTION.md"
+}
+
+# ---------------------------------------------------------------- check / status
+
+elapsed() {
+  local s; s="$(state_get started_at)"
+  [ -n "$s" ] && echo $(( $(date +%s) - s )) || echo 0
+}
+
+cmd_check() {
+  local json=0 rc=0 status desc first=1 secs hints
+  has_flag --json "$@" && json=1
+  need_docker
+  lab_load "$(current_lab)"
+  lab_check || rc=1
+  secs="$(elapsed)"; hints="$(state_get hints)"; hints="${hints:-0}"
+  if [ "$json" = 1 ]; then
+    printf '{"id":"%s","passed":%s,"seconds":%s,"hints_used":%s,"objectives":[' \
+      "$LAB_ID" "$([ $rc = 0 ] && echo true || echo false)" "$secs" "$hints"
+    while IFS="$(printf '\t')" read -r status desc; do
+      [ "$first" = 1 ] || printf ','
+      first=0
+      printf '{"passed":%s,"objective":"%s"}' "$([ "$status" = PASS ] && echo true || echo false)" \
+        "$(printf '%s' "$desc" | json_escape)"
+    done < "$DBB_RESULTS"
+    printf ']}\n'
+  else
+    say ""
+    while IFS="$(printf '\t')" read -r status desc; do
+      if [ "$status" = PASS ]; then say "  ${C_GRN}PASS${C_OFF}  $desc"
+      else say "  ${C_RED}FAIL${C_OFF}  $desc"; fi
+    done < "$DBB_RESULTS"
+    say ""
+    if [ $rc = 0 ]; then
+      say "${C_GRN}${C_BLD}Fixed.${C_OFF} $LAB_ID solved in $(( secs / 60 )) min $(( secs % 60 )) s, $hints hint(s) used."
+      say "Now read why it happened and how to prevent it: ${C_BLD}./dbb solution${C_OFF}"
+      say "Then: ./dbb stop && ./dbb next"
+    else
+      say "Not fixed yet. Stuck? ${C_BLD}./dbb hint${C_OFF}"
+    fi
+  fi
+  if [ $rc = 0 ] && ! is_solved "$LAB_ID"; then
+    mkdir -p "$DBB_DIR"
+    printf '%s %s %s %s\n' "$LAB_ID" "$(date +%Y-%m-%d)" "$secs" "$hints" >> "$DBB_DIR/progress"
+  fi
+  return $rc
+}
+
+cmd_status() {
+  local json=0 solved=0 total=0 id
+  has_flag --json "$@" && json=1
+  for id in $(lab_ids); do total=$((total+1)); is_solved "$id" && solved=$((solved+1)); done
+  if [ ! -f "$DBB_DIR/current" ]; then
+    if [ "$json" = 1 ]; then printf '{"current":null,"solved":%s,"total":%s}\n' "$solved" "$total"
+    else say "No lab running. Solved $solved of $total. Next: ./dbb next"; fi
+    return 0
+  fi
+  lab_load "$(cat "$DBB_DIR/current")"
+  local secs hints; secs="$(elapsed)"; hints="$(state_get hints)"; hints="${hints:-0}"
+  if [ "$json" = 1 ]; then
+    printf '{"current":"%s","seconds":%s,"hints_used":%s,"solved":%s,"total":%s}\n' \
+      "$LAB_ID" "$secs" "$hints" "$solved" "$total"
+  else
+    say "Running: ${C_BLD}$LAB_ID${C_OFF}  $TITLE"
+    say "Time:    $(( secs / 60 )) min   Hints used: $hints   Solved: $solved of $total"
+  fi
+}
+
+# ---------------------------------------------------------------- main
+
+main() {
+  local cmd="${1:-help}"
+  [ $# -gt 0 ] && shift
+  case "$cmd" in
+    doctor)   cmd_doctor "$@" ;;
+    list|ls)  cmd_list "$@" ;;
+    next)     cmd_next "$@" ;;
+    start)    cmd_start "$@" ;;
+    shell|sh) cmd_shell "$@" ;;
+    exec)     cmd_exec "$@" ;;
+    hint)     cmd_hint "$@" ;;
+    check)    cmd_check "$@" ;;
+    reset)    cmd_reset "$@" ;;
+    solution) cmd_solution "$@" ;;
+    status)   cmd_status "$@" ;;
+    stop)     cmd_stop "$@" ;;
+    nuke)     cmd_nuke "$@" ;;
+    verify)   cmd_verify "$@" ;;
+    help|-h|--help) usage ;;
+    *) usage >&2; exit 2 ;;
+  esac
+}
+
+main "$@"

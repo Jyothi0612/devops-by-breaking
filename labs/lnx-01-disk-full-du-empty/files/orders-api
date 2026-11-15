@@ -1,0 +1,12 @@
+#!/bin/bash
+# orders-api: a tiny stand-in for a long-running batch worker.
+# It keeps its log file open, and re-opens it when it receives SIGHUP.
+LOG=/var/log/app/orders.log
+exec 3>>"$LOG"
+trap 'exec 3>&-; exec 3>>"$LOG"' HUP
+n=0
+while true; do
+  n=$((n + 1))
+  echo "$(date '+%Y-%m-%dT%H:%M:%S') INFO order=$n status=processed batch=nightly-settlement" >&3 2>/dev/null
+  sleep 0.2 3>&-
+done

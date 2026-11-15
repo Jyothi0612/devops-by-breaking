@@ -1,0 +1,26 @@
+# captured 2026-11-15 from a fresh `./dbb start k8s-01` (k3s v1.37.2+k3s1, arm64)
+$ kubectl -n shop get pods,svc
+NAME                         READY   STATUS    RESTARTS   AGE
+pod/client-b5c548988-vbdsm   1/1     Running   0          2s
+pod/web-5695cf7879-498xs     1/1     Running   0          2s
+pod/web-5695cf7879-dxtdv     1/1     Running   0          2s
+
+NAME          TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)   AGE
+service/web   ClusterIP   10.43.176.249   <none>        80/TCP    2s
+
+$ kubectl -n shop get endpointslices
+NAME        ADDRESSTYPE   PORTS     ENDPOINTS   AGE
+web-vbv9r   IPv4          <unset>   <unset>     2s
+
+$ kubectl -n shop exec deploy/client -- wget -qO- -T 3 http://web
+wget: download timed out
+command terminated with exit code 1
+
+$ kubectl -n shop describe svc web | grep -E "Selector|Endpoints"
+Selector:                 app=web-frontend
+Endpoints:
+
+$ kubectl -n shop get pods --show-labels -l app=web
+NAME                   READY   STATUS    RESTARTS   AGE   LABELS
+web-5695cf7879-498xs   1/1     Running   0          5s    app=web,pod-template-hash=5695cf7879,tier=frontend
+web-5695cf7879-dxtdv   1/1     Running   0          5s    app=web,pod-template-hash=5695cf7879,tier=frontend

@@ -1,0 +1,17 @@
+# Every external image this repo uses, pinned by tag AND digest.
+# Update with: tools/bump.sh   (never edit digests by hand)
+IMG_SERVER_BASE="rockylinux/rockylinux:9.8@sha256:8101994123cf3d0a8fee517bee7f39e555c7d92bd2d9eb3303cc988a0eeed00f"
+IMG_K3S="rancher/k3s:v1.37.2-k3s1@sha256:21ea6e0fac4e3930c2ce8aa40ddd41a8b18cb3e9a0222c030dc005e7e88c4332"
+IMG_K3S_LOCALPATH="rancher/local-path-provisioner:v0.0.37@sha256:e757967a5ec338f6a9b371c5a9688bedaa8c3578ea3dd4db329ea0084be0a86f"
+IMG_K3S_COREDNS="rancher/mirrored-coredns-coredns:1.14.7@sha256:7efd3c635b03efd68c4e8398fc45f0d993d0e9ab016f72c1cefb0fd6d01aa286"
+IMG_K3S_BUSYBOX="rancher/mirrored-library-busybox:1.37.0@sha256:101b4afd76732482eff9b95cae5f94bcf295e521fbec4e01b69c5421f3f3f3e5"
+IMG_K3S_PAUSE="rancher/mirrored-pause:3.10.2@sha256:f548e0e8e3dc1896ca956272154dde3314e8cc4fde0a57577ee9fa1c63f5baf4"
+IMG_K3S_HELM="rancher/klipper-helm:v0.13.3-build20261021@sha256:391ec9f4824d631c49b52c1e3d10e4a2ced37a784afd75852e34bb2a6c7309b1"
+IMG_TERRAFORM="hashicorp/terraform:1.17.2@sha256:6e9c1e647c31a960dc9b59e13272f9111d90010c10b717f77ffb324767660475"
+IMG_NGINX="nginx:1.29-alpine@sha256:5616878291a2eed594aee8db4dade5878cf7edcb475e59193904b198d9b830de"
+IMG_BUSYBOX="busybox:1.37@sha256:a7dbc319b1438115a207e11930dc4bb3e643dcb3ec0bdd694bb36cd8fad289ec"
+IMG_BASH32="bash:3.2@sha256:2556c2da19c32c1614d318645c73a7bf64d38be21cf69e98e3ca51f053983719"
+
+# Images built locally from images/<name>/Dockerfile
+DBB_SERVER_IMAGE="dbb/server:1"
+DBB_TERRAFORM_IMAGE="dbb/terraform:1.17.2"

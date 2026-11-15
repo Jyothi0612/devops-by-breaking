@@ -1,0 +1,15 @@
+A Service does not know about Deployments. It finds its pods with a label selector, and
+Kubernetes writes the matching pod IPs into the Service's endpoints. Look at the
+endpoints first:
+
+    kubectl -n shop get endpointslices
+    kubectl -n shop describe svc web
+---
+Compare two things side by side: the selector on the Service, and the labels on the pods.
+
+    kubectl -n shop get svc web -o jsonpath='{.spec.selector}'
+    kubectl -n shop get pods --show-labels
+---
+The Service selects `app=web-frontend`. The pods are labelled `app=web`. One of the two
+has to change. Which is the safer one to change: the label on running pods that a
+Deployment owns, or the selector on the Service?

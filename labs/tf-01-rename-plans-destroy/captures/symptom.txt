@@ -1,0 +1,44 @@
+# captured 2026-11-15 from a fresh `./dbb start tf-01` (Terraform 1.17.2, random 3.9.1)
+$ terraform plan
+  # random_password.db will be destroyed
+  # (because random_password.db is not in configuration)
+  - resource "random_password" "db" {
+      - bcrypt_hash = (sensitive value) -> null
+      - id          = "none" -> null
+      - length      = 24 -> null
+      - result      = (sensitive value) -> null
+      - special     = false -> null
+      ...
+    }
+
+  # random_password.orders_db will be created
+  + resource "random_password" "orders_db" {
+      + bcrypt_hash = (sensitive value)
+      + id          = (known after apply)
+      + length      = 24
+      + lower       = true
+      + min_lower   = 0
+      + min_numeric = 0
+      + min_special = 0
+      + min_upper   = 0
+      + number      = true
+      + numeric     = true
+      + result      = (sensitive value)
+      + special     = false
+      + upper       = true
+    }
+
+  # terraform_data.orders_database will be updated in-place
+  ~ resource "terraform_data" "orders_database" {
+        id     = "f2feee9e-b638-9bb2-c4d5-6dcb86455638"
+      ~ input  = {
+            name                 = "orders-prod"
+          ~ password_fingerprint = (sensitive value)
+        }
+      ~ output = {
+          - name                 = "orders-prod"
+          - password_fingerprint = "c72a5d3ae900f07f0f3bb6993915774b4ecfe3bb11fa28c8398430053646f38a"
+        } -> (known after apply)
+    }
+
+Plan: 1 to add, 1 to change, 1 to destroy.
