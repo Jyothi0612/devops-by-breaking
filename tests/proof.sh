@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# shellcheck disable=SC2329 # Runtime overrides are invoked by sourced verify_one.
+# shellcheck disable=SC2317,SC2329 # Runtime overrides are invoked by sourced verify_one.
 # Regression tests for false-green proofs. No Docker or learner state is touched.
 set -u
 DBB_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
