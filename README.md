@@ -38,7 +38,7 @@ told you not to touch. **The check knows the difference.**
 ## The labs
 
 Five labs are implemented on this development branch. The two container labs await
-the author solve-through gate. See [build progress](docs/PROGRESS.md) for completed
+the [author solve-through gate](docs/AUTHOR-CHECKLIST.md). See [build progress](docs/PROGRESS.md) for completed
 work, verification evidence and the remaining release gates.
 
 <!-- catalog:start -->

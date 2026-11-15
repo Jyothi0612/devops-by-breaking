@@ -37,8 +37,17 @@ Local validation of the continuation on macOS arm64 with Docker:
 `./dbb verify all` passed all three labs, including all seven shortcut scripts,
 the Kubernetes restart check and per-lab cleanup. All 12 regression checks passed
 both locally and in the pinned Bash 3.2 container. ShellCheck, shell syntax checks,
-lab lint and the README catalog check passed. These changes have not been pushed
-or tested on the GitHub amd64/arm64 matrix yet.
+lab lint and the README catalog check passed. The harness changes were pushed to
+main as `0f43231`, followed by test-lint compatibility fix `a8c1dcf`.
+
+The strengthened harness at `a8c1dcf` passed the
+[five-run soak on both architectures](https://github.com/Jyothi0612/devops-by-breaking/actions/runs/43764290233):
+30 successful verification runs, plus lint and the Bash 3.2 regression suite.
+
+The full development branch at `55a2970` passed its
+[five-run soak on both architectures](https://github.com/Jyothi0612/devops-by-breaking/actions/runs/43764330533):
+five labs × five runs × two architectures = 50 successful verification runs.
+Later documentation-only commits record these results; executable code is unchanged.
 
 ## Open gates and gaps
 
@@ -51,18 +60,19 @@ or tested on the GitHub amd64/arm64 matrix yet.
 - Restart-survival coverage needs a documented per-runtime policy: restarting
   orders-api violates lnx-01's explicit same-process objective, while Terraform
   already starts a fresh tool container for each command.
-- Image reuse currently trusts an existing local tag; enforcing the lockfile
+- Older runtimes still trust an existing local tag (the Docker runtime uses the
+  digest directly); enforcing the lockfile
   digest even when a tag already exists remains a runtime hardening task.
 - No Ansible runtime, security labs, incidents, agent harness,
   scaffold command, learning paths or remaining curriculum yet.
 
 ## Next build slices
 
-1. Run the strengthened harness in both-architecture CI and repeat the soak
-   before claiming release evidence for these changes.
+1. Complete the author solve-through checklist before merging the new labs.
+   Keep release evidence tied to the exact tested commit.
 2. Resolve restart semantics and image-cache digest enforcement; record the
    author gate separately from automated checks.
-3. Complete the author gate for ctr-01/ctr-02, then continue v0.2 with lnx-03,
+3. Continue v0.2 with lnx-03,
    lnx-05, lnx-07, net-01, k8s-02, k8s-06 and tf-02. Capture actual symptoms
    and prove every shortcut for each lab before counting it as shipped.
 4. Add GHCR publishing and the demo GIF. Reset, progress tracking and the
@@ -81,4 +91,8 @@ runs; the port lab recorded an empty reply rather than assuming a particular cur
 
 The initial harness CI run exposed an older ShellCheck diagnostic for test function
 overrides. A test-only compatibility annotation addresses it; all 12 regression tests
-still pass. Updated CI/soak results will be recorded after completion.
+still pass. The Docker jobs at `55a2970` passed five runs per lab on amd64 and arm64
+(20 successful verifications), including restart survival and cleanup.
+See the [development branch soak](https://github.com/Jyothi0612/devops-by-breaking/actions/runs/43764330533).
+
+Use [AUTHOR-CHECKLIST.md](AUTHOR-CHECKLIST.md) to record the two new blind solves.
