@@ -37,12 +37,15 @@ told you not to touch. **The check knows the difference.**
 
 ## The labs
 
-Three labs are implemented. See [build progress](docs/PROGRESS.md) for completed
+Five labs are implemented on this development branch. The two container labs await
+the author solve-through gate. See [build progress](docs/PROGRESS.md) for completed
 work, verification evidence and the remaining release gates.
 
 <!-- catalog:start -->
 | Lab | Track | Level | Time | The symptom |
 |---|---|---|---|---|
+| [ctr-01](labs/ctr-01-container-exits-zero/) | containers | L1 | 10 min | Container exits immediately with code 0 |
+| [ctr-02](labs/ctr-02-published-port-no-response/) | containers | L1 | 10 min | Port published, but the catalogue is unreachable |
 | [k8s-01](labs/k8s-01-service-no-endpoints/) | kubernetes | L1 | 15 min | Service has no endpoints, curl times out |
 | [lnx-01](labs/lnx-01-disk-full-du-empty/) | linux | L1 | 15 min | Disk 100% full, but du finds nothing |
 | [tf-01](labs/tf-01-rename-plans-destroy/) | terraform | L1 | 15 min | Renamed a resource, plan wants to destroy the database password |

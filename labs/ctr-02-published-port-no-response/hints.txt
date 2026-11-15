@@ -1,0 +1,5 @@
+Compare a request inside the container with a request through the published host port.
+---
+Use docker exec to inspect nginx.conf and /proc/net/tcp. Which address is listening on port 80?
+---
+The container has its own loopback interface. Bind nginx to port 80 on all container interfaces, keeping the host publication on 127.0.0.1. Then run ./run.sh.

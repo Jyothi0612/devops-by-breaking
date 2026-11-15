@@ -5,7 +5,7 @@ set -u
 
 DBB_ROOT="$(cd "$(dirname "$0")" && pwd)"
 export DBB_ROOT
-for _f in core check server k8s terraform verify; do
+for _f in core check server k8s terraform docker verify; do
   # shellcheck source=/dev/null
   . "$DBB_ROOT/lib/$_f.sh"
 done

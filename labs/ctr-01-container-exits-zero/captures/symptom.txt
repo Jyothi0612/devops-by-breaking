@@ -1,0 +1,11 @@
+$ docker inspect -f 'state={{.State.Status}} exit_code={{.State.ExitCode}}' dbb-ctr-01-web
+state=exited exit_code=0
+
+$ docker logs dbb-ctr-01-web
+2026/11/15 21:29:15 [notice] 1#1: using the "epoll" event method
+2026/11/15 21:29:15 [notice] 1#1: nginx/1.29.8
+2026/11/15 21:29:15 [notice] 1#1: built by gcc 15.2.0 (Alpine 15.2.0) 
+2026/11/15 21:29:15 [notice] 1#1: OS: Linux 6.12.76-linuxkit
+2026/11/15 21:29:15 [notice] 1#1: getrlimit(RLIMIT_NOFILE): 1048576:1048576
+2026/11/15 21:29:15 [notice] 7#7: start worker processes
+2026/11/15 21:29:15 [notice] 7#7: start worker process 8

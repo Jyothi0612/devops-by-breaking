@@ -21,6 +21,11 @@ is your machine. What limits the exposure:
 - No lab publishes a port on anything other than `127.0.0.1`.
 - Lab scripts are short and readable: `labs/<id>/setup.sh` is everything a lab does.
 
+Container labs (`ctr-*`) run unprivileged with a 128 MB memory limit and a 128-process
+limit. Only their workspace configuration, startup script and page are bind-mounted,
+read-only. Their host shell can run Docker commands as your user; it is not an agent
+sandbox. Published ports bind only to `127.0.0.1`.
+
 Terraform labs run unprivileged, as your own user, with `--network none`.
 
 If you are not comfortable running privileged containers on a work laptop, run the labs
