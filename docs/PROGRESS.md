@@ -34,8 +34,16 @@ Local validation of the continuation on macOS arm64 with Docker:
 `./dbb verify all` passed all three labs, including all seven shortcut scripts,
 the Kubernetes restart check and per-lab cleanup. All 12 regression checks passed
 both locally and in the pinned Bash 3.2 container. ShellCheck, shell syntax checks,
-lab lint and the README catalog check passed. These changes have not been pushed
-or tested on the GitHub amd64/arm64 matrix yet.
+lab lint and the README catalog check passed. The harness changes were pushed to
+main as `0f43231`, followed by test-lint compatibility fix `a8c1dcf`.
+
+The strengthened harness at `a8c1dcf` passed the
+[five-run soak on both architectures](https://github.com/Jyothi0612/devops-by-breaking/actions/runs/43764290233):
+30 successful verification runs, plus lint and the Bash 3.2 regression suite.
+
+The [v0.2 development branch](https://github.com/Jyothi0612/devops-by-breaking/tree/v0.2/docker-labs)
+adds a Docker runtime and ctr-01/ctr-02. Those labs remain separate from main pending
+the author's blind solves and personal interview answers.
 
 ## Open gates and gaps
 
@@ -55,8 +63,8 @@ or tested on the GitHub amd64/arm64 matrix yet.
 
 ## Next build slices
 
-1. Run the strengthened harness in both-architecture CI and repeat the soak
-   before claiming release evidence for these changes.
+1. The strengthened harness soak is complete; preserve evidence against the
+   tested commit. Complete the author gate for new labs before merging them.
 2. Resolve restart semantics and image-cache digest enforcement; record the
    author gate separately from automated checks.
 3. Continue v0.2: add the Docker runtime and ctr-01/ctr-02, then lnx-03,
