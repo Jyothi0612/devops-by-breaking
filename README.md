@@ -37,6 +37,9 @@ told you not to touch. **The check knows the difference.**
 
 ## The labs
 
+Three labs are implemented. See [build progress](docs/PROGRESS.md) for completed
+work, verification evidence and the remaining release gates.
+
 <!-- catalog:start -->
 | Lab | Track | Level | Time | The symptom |
 |---|---|---|---|---|

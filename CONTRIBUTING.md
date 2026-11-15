@@ -5,10 +5,11 @@ still shows it.
 
 ## The bar
 
-Your pull request is ready when both of these pass:
+Your pull request is ready when these pass:
 
 ```
 tools/lint-lab.sh
+bash tests/proof.sh
 ./dbb verify <your-lab-id>
 ```
 
@@ -59,3 +60,8 @@ Copy the closest existing lab and change it.
 | `k8s` | `k <kubectl args>`, `k_apply <file>` |
 | `terraform` | `tf <args>`, `tf_sh '<script>'`, files live in `$DBB_WORK` |
 | all | `check "<objective>" <cmd>`, `wait_for <secs> <cmd>`, `state_set <key> <value>`, `state_get <key>` |
+
+Check scripts must finish successfully and emit objectives through `check`. A nonzero
+script exit or no objectives is a checker error (exit 2), not a broken-lab result
+(exit 1). Cheat and restart scripts must also exit successfully for `verify` to
+accept their evidence.

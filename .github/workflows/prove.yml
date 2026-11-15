@@ -25,13 +25,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: shellcheck
-        run: shellcheck -x dbb lib/*.sh tools/*.sh labs/*/*.sh labs/*/solution/*.sh labs/*/solution/cheats/*.sh
+        run: shellcheck -x dbb lib/*.sh tools/*.sh tests/*.sh labs/*/*.sh labs/*/solution/*.sh labs/*/solution/cheats/*.sh
       - name: bash 3.2 (the macOS default) can parse and run the CLI
         run: |
           . ./images.lock
           docker run --rm -v "$PWD:/repo" -w /repo "$IMG_BASH32" bash -c '
             set -e
-            for f in dbb lib/*.sh tools/*.sh labs/*/*.sh labs/*/solution/*.sh labs/*/solution/cheats/*.sh; do bash -n "$f"; done
+            for f in dbb lib/*.sh tools/*.sh tests/*.sh labs/*/*.sh labs/*/solution/*.sh labs/*/solution/cheats/*.sh; do bash -n "$f"; done
+            bash tests/proof.sh
             bash ./dbb help >/dev/null
             bash ./dbb list
             bash ./dbb list --json >/dev/null'

@@ -133,12 +133,19 @@ lab_up() {
   echo 0 > "$(state_dir)/hints"
 }
 
-# Run check.sh. Result lines land in $DBB_RESULTS; returns 0 only if all pass.
+# Run check.sh: 0 = all pass, 1 = failed objectives, 2 = checker error.
+# A crashed or empty checker is never evidence that a lab is broken.
 lab_check() {
   DBB_RESULTS="$(state_dir)/results"
   : > "$DBB_RESULTS"
   export DBB_RESULTS
-  ( . "$LAB_DIR/check.sh" ) >/dev/null 2>&1
-  [ -s "$DBB_RESULTS" ] || return 1
+  if ! ( . "$LAB_DIR/check.sh" ) >"$(state_dir)/check.log" 2>&1; then
+    printf 'FAIL\tCheck script failed; inspect .dbb/state/%s/check.log\n' "$LAB_ID" >> "$DBB_RESULTS"
+    return 2
+  fi
+  if [ ! -s "$DBB_RESULTS" ]; then
+    printf 'FAIL\tCheck script produced no objectives\n' >> "$DBB_RESULTS"
+    return 2
+  fi
   ! grep -q '^FAIL' "$DBB_RESULTS"
 }

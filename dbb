@@ -234,7 +234,7 @@ cmd_check() {
   has_flag --json "$@" && json=1
   need_docker
   lab_load "$(current_lab)"
-  lab_check || rc=1
+  lab_check || rc=$?
   secs="$(elapsed)"; hints="$(state_get hints)"; hints="${hints:-0}"
   if [ "$json" = 1 ]; then
     printf '{"id":"%s","passed":%s,"seconds":%s,"hints_used":%s,"objectives":[' \
