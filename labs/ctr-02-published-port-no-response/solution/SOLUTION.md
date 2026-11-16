@@ -66,8 +66,12 @@ opening broader firewall rules.
 
 ## Say it in an interview
 
-Author gate pending: write your own 15-second answer after solving blind. Explain
-which loopback was involved, how the two request paths differed and what you changed.
+*AI-drafted practice answer — review and adapt to your own understanding.*
+
+“I'd compare an internal request with a request through the published port. Here the app
+listens on the container's loopback address, so Docker's forwarding can't reach it. I'd
+listen on the container's network interfaces while keeping the host port bound to
+localhost, then test the published endpoint again.”
 
 ## Further reading
 

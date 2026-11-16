@@ -55,9 +55,12 @@ credentials to anyone who pulls the image layers.
 
 ## Say it in an interview
 
-Author gate pending: write your own 15-second answer after solving blind. Cover why
-`RUN rm` in a later layer does not remove data from earlier layers, how you verified it,
-and why you rotate first and use `.dockerignore`.
+*AI-drafted practice answer — review and adapt to your own understanding.*
+
+“Deleting a secret in a later image layer doesn't erase it from an earlier layer. I'd
+rotate the credential first, exclude the file from the build context, and rebuild and
+inspect the image. For build-time credentials, I'd use a secret mount instead of copying
+them into the image.”
 
 ## Further reading
 

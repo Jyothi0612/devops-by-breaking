@@ -33,9 +33,15 @@ jobs:
             set -e
             for f in dbb lib/*.sh tools/*.sh tests/*.sh labs/*/*.sh labs/*/solution/*.sh labs/*/solution/cheats/*.sh; do bash -n "$f"; done
             bash tests/proof.sh
+            bash tests/agent-run.sh
+            bash tests/paths.sh
             bash ./dbb help >/dev/null
             bash ./dbb list
             bash ./dbb list --json >/dev/null'
+      - name: agent broker unit tests
+        run: |
+          . ./images.lock
+          docker run --rm --network none -v "$PWD:/repo:ro" -w /repo "$IMG_ANSIBLE_BASE" python tests/agent_broker.py
       - name: every lab meets the bar
         run: tools/lint-lab.sh
       - name: README lab table is current
@@ -79,5 +85,14 @@ jobs:
             echo "::endgroup::"
             i=$((i + 1))
           done
+      - name: agent isolation and execution limits
+        if: matrix.lab == 'lnx-01'
+        run: bash tests/agent-integration.sh
+      - name: agent tool runtime repair
+        if: contains(fromJSON('["tf-01", "ans-01", "k8s-01"]'), matrix.lab)
+        run: bash tests/agent-runtimes.sh "${{ matrix.lab }}"
+      - name: valid Ansible alternative is accepted
+        if: matrix.lab == 'ans-01'
+        run: bash tests/ansible-content.sh
       - name: nothing left behind
         run: test -z "$(docker ps -aq --filter label=dbb.lab)"

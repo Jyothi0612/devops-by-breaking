@@ -64,9 +64,12 @@ events (`FailedCreate`).
 
 ## Say it in an interview
 
-Author gate pending: write your own 15-second answer after solving blind. Cover why
-`kubectl apply` on a Deployment succeeds while the ReplicaSet fails, the four
-`restricted` fields, and why relaxing the namespace label is the wrong fix.
+*AI-drafted practice answer — review and adapt to your own understanding.*
+
+“I'd check ReplicaSet events when a Deployment exists but creates no pods. Here
+restricted Pod Security rejects the pod template. I'd add the required security settings
+and use a non-root UID that works with the image, then verify the workload starts while
+the namespace remains restricted. Weakening enforcement isn't the workload fix.”
 
 ## Further reading
 

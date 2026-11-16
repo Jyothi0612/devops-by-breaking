@@ -37,9 +37,11 @@ told you not to touch. **The check knows the difference.**
 
 ## The labs
 
-Twelve labs are implemented on this development branch. The nine new v0.2 labs await
+Twenty labs are implemented on this development branch, covering the v0.2 and v0.3
+catalogs. The seventeen additions beyond v0.1 await
 the [author solve-through gate](docs/AUTHOR-CHECKLIST.md). See [build progress](docs/PROGRESS.md) for completed
-work, verification evidence and the remaining release gates.
+work, verification evidence and the remaining release gates. The
+[implementation handoff](docs/IMPLEMENTATION-STATUS.md) lists completed work and next steps.
 
 To try these development labs after cloning, run `git switch v0.2/docker-labs`.
 
@@ -68,8 +70,8 @@ To try these development labs after cloning, run `git switch v0.2/docker-labs`.
 | [tf-02](labs/tf-02-remove-item-replaces-others/) | terraform | L2 | 20 min | Removed one list item, plan replaces the others |
 <!-- catalog:end -->
 
-More are on the way: Linux, networking, containers, Kubernetes, Terraform, Ansible, a
-security track (secrets, RBAC, NetworkPolicy, Pod Security) and multi-cause incidents.
+The remaining roadmap adds more Linux, networking, container, Kubernetes, Terraform
+and Ansible labs, plus multi-cause incidents.
 
 ## What a lab gives you
 
@@ -86,7 +88,7 @@ security track (secrets, RBAC, NetworkPolicy, Pod Security) and multi-cause inci
 ```
 ./dbb doctor              is this machine ready?
 ./dbb list                all labs   [--track T] [--level N] [--tag T] [--json]
-./dbb next                the next lab you have not solved
+./dbb next                the next lab you have not solved   [--path NAME]
 ./dbb start <id>          start a lab in its broken state and show the ticket
 ./dbb shell               open a shell where the problem is
 ./dbb exec -- <command>   run one command there
@@ -128,6 +130,13 @@ that the labs run without a network.
 
 Some labs run a privileged container, because they need a real init system or a real
 Kubernetes node. [SECURITY.md](SECURITY.md) explains exactly what that means.
+
+## Agent experiments
+
+The [agent runner](docs/AGENTS.md) separates a containerized agent from the reference
+solutions and enforces lab-command budgets. It currently supports server, Kubernetes,
+Terraform and Ansible labs; Docker-runtime labs are refused. Read its security scope
+before running an agent against privileged labs.
 
 ## Contributing
 

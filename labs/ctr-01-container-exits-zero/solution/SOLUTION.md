@@ -69,8 +69,12 @@ before adding restart policies.
 
 ## Say it in an interview
 
-Author gate pending: write your own 15-second answer after solving blind. Cover the
-symptom, the main process exiting, the evidence you checked and an external health probe.
+*AI-drafted practice answer — review and adapt to your own understanding.*
+
+“Exit code zero only means the main process finished successfully. Here nginx
+daemonises, so the container's main process exits. I'd keep nginx in the foreground,
+recreate the container, and test HTTP from outside it. A running container is useful
+only if the service inside is actually working.”
 
 ## Further reading
 

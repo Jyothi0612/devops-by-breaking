@@ -51,9 +51,12 @@ deleted a `RoleBinding` or renamed a `ServiceAccount`.
 
 ## Say it in an interview
 
-Author gate pending: write your own 15-second answer after solving blind. Cover how
-`kubectl auth can-i --as` confirms RBAC, why `RoleBinding` (not `ClusterRoleBinding`
-to `cluster-admin`) is the right fix, and how you enforce least privilege.
+*AI-drafted practice answer — review and adapt to your own understanding.*
+
+“I'd test the service account with kubectl auth can-i and inspect its Roles and
+bindings. Here the Role exists but its binding is missing. I'd restore a namespace-
+scoped RoleBinding and verify the required access. Granting cluster-admin would fix the
+symptom by giving the application far more privilege than it needs.”
 
 ## Further reading
 

@@ -46,11 +46,16 @@ Then run `./dbb check` from the repository root, and verify `sshd -T` still repo
 
 Never run `chmod -R 777` or `chmod 777` on home directories in deploy scripts, and
 audit home directory permissions in configuration management or host hardening checks.
-Example Prometheus alert rule on auth failures:
+The following is a **custom log-derived metric**, not a built-in sshd or node_exporter
+metric. Configure a journal/log collector to count sshd messages matching
+`Authentication refused: bad ownership or modes`, expose a cumulative counter named
+`sshd_auth_refused_bad_modes_total` per host, and scrape it with Prometheus. Initialize
+the counter to zero and monitor collector/scrape health separately. Only after that
+instrumentation exists can this rule detect new bad-permission refusals:
 
 ```yaml
 - alert: SshAuthRefusedBadModes
-  expr: increase(sshd_auth_refused_total[5m]) > 0
+  expr: increase(sshd_auth_refused_bad_modes_total[5m]) > 0
   labels:
     severity: warning
   annotations:
@@ -65,9 +70,12 @@ while `.ssh` and `authorized_keys` still look intact.
 
 ## Say it in an interview
 
-Author gate pending: write your own 15-second answer after solving blind. Cover the
-symptom, why `StrictModes` checks the parent home directory, the `sshd` log line, and
-why disabling `StrictModes` is unsafe.
+*AI-drafted practice answer — review and adapt to your own understanding.*
+
+“I'd read the sshd log before replacing keys. Here it reports unsafe permissions on the
+user's home directory. I'd remove group and world write access and retry the key login
+with StrictModes still enabled. Disabling that check would hide the problem while
+leaving the account vulnerable to local tampering.”
 
 ## Further reading
 

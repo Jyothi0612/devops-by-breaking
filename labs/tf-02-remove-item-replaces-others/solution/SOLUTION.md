@@ -81,9 +81,12 @@ causes Terraform to destroy and recreate every subsequent resource in the list.
 
 ## Say it in an interview
 
-Author gate pending: write your own 15-second answer after solving blind. Cover why
-`count` shifts indices on middle-item removal, how `for_each` + `moved` preserves
-surviving resources, and why you avoid `count` for named collections.
+*AI-drafted practice answer — review and adapt to your own understanding.*
+
+“I'd inspect which instances the plan wants to replace. With count, removing the middle
+list item shifts the later indices; here that changes the token's keeper and forces
+replacement. I'd use stable for_each keys and move the surviving state addresses, then
+confirm only the retired service is destroyed.”
 
 ## Further reading
 

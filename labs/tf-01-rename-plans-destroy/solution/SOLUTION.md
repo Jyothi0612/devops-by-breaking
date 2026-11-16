@@ -92,7 +92,13 @@ resource "random_password" "orders_db" {
 }
 ```
 
-With `prevent_destroy`, the bad plan fails with an error instead of offering to proceed.
+`prevent_destroy` rejects destruction while the protected resource block remains
+in configuration. It does **not** protect the old address when that block is removed
+or renamed. Adding it to `orders_db` alone will not stop destruction of the old `db`
+resource in this lab. Use a `moved` block or `state mv` for the rename, and review
+all planned deletions.
+
+See the [lifecycle reference](https://developer.hashicorp.com/terraform/language/meta-arguments/lifecycle#prevent_destroy).
 
 ## In production this looks like
 
@@ -105,12 +111,12 @@ With `prevent_destroy`, the bad plan fails with an error instead of offering to 
 
 ## Say it in an interview
 
-"The plan showed one destroy and one create for the same resource type after a rename.
-Terraform tracks resources by address, so a renamed block looks like a delete plus a
-create. I added a `moved` block from the old address to the new one, the plan went to
-zero changes, and I applied it to record the move. I prefer `moved` over `state mv`
-because it is reviewed and repeatable. To prevent it I'd fail CI on any plan containing
-a delete, and set `prevent_destroy` on stateful resources."
+*AI-drafted practice answer — review and adapt to your own understanding.*
+
+“I'd compare the planned resource addresses with state. Terraform sees this rename as a
+deletion and a creation unless the move is declared. I'd add a moved block, confirm
+there's no replacement, and apply it. prevent_destroy isn't a substitute: it can't
+protect the old address once its configuration has been removed.”
 
 ## Further reading
 

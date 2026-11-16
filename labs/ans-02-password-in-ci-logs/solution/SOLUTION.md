@@ -42,9 +42,12 @@ archived in build logs.
 
 ## Say it in an interview
 
-Author gate pending: write your own 15-second answer after solving blind. Cover why
-`no_log: true` is needed on secret tasks, why `register` + `debug` amplifies leaks,
-and why you rotate first when a secret hits CI logs.
+*AI-drafted practice answer — review and adapt to your own understanding.*
+
+“I'd rotate the exposed password first. Then I'd protect the task handling it with
+no_log and remove or protect any debug output that prints it. I'd check verbose output
+as well as normal logs, and confirm the application still receives the password.
+Cleaning logs alone doesn't revoke a leaked credential.”
 
 ## Further reading
 

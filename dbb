@@ -18,7 +18,7 @@ ${C_BLD}dbb${C_OFF} — learn DevOps by fixing real breakages
 
   ./dbb doctor              is this machine ready?
   ./dbb list                all labs   [--track T] [--level N] [--tag T] [--json]
-  ./dbb next                the next lab you have not solved
+  ./dbb next                the next lab you have not solved   [--path NAME]
   ./dbb start <id>          start a lab in its broken state and show the ticket
   ./dbb shell               open a shell where the problem is
   ./dbb exec -- <command>   run one command there (no terminal needed)
@@ -126,13 +126,13 @@ cmd_next() {
     esac
   done
   if [ -n "$path_name" ]; then
-    ids="$(awk -F'|' -v p="\`$path_name\`" '$0 ~ p { gsub(/`/, "", $4); print $4; exit }' "$DBB_ROOT/docs/PATHS.md")"
+    ids="$(awk -F'|' -v p="\`$path_name\`" '{ key=$2; gsub(/^[[:space:]]+|[[:space:]]+$/, "", key) } key == p { gsub(/`/, "", $4); print $4; exit }' "$DBB_ROOT/docs/PATHS.md")"
     [ -n "$ids" ] || die "unknown path '$path_name' (see docs/PATHS.md)"
   else
     ids="$(lab_ids)"
   fi
   for id in $ids; do
-    [ -n "$(lab_dir "$id" 2>/dev/null || true)" ] || continue
+    [ -n "$(lab_path "$id" 2>/dev/null || true)" ] || continue
     is_solved "$id" && continue
     lab_load "$id"
     say "Next: ${C_BLD}$id${C_OFF}  $TITLE  (L$LEVEL, about $MINUTES min)"
