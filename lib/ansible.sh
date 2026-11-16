@@ -47,8 +47,12 @@ ansible_start() {
   fi
   chmod 700 "$DBB_WORK/.ssh"
   chmod 600 "$DBB_WORK/.ssh/id_ed25519"
+  # Rocky ships /etc/shadow as mode 000, so PAM's unix_chkpwd helper needs DAC override
+  # to read it. Ubuntu 24.04+ hosts confine any binary at that path with their own
+  # AppArmor unix-chkpwd profile, which denies that capability, so root's SSH login
+  # fails with "Access denied ... by PAM account configuration". 0400 needs no override.
   docker exec "$(ansible_node)" bash -c \
-    'mkdir -p /root/.ssh && chmod 700 /root/.ssh && ssh-keygen -A && systemctl enable -q --now sshd'
+    'chmod 0400 /etc/shadow && mkdir -p /root/.ssh && chmod 700 /root/.ssh && ssh-keygen -A && systemctl enable -q --now sshd'
   docker cp -q "$DBB_WORK/.ssh/id_ed25519.pub" "$(ansible_node):/root/.ssh/authorized_keys"
   docker exec "$(ansible_node)" bash -c \
     'chown root:root /root/.ssh/authorized_keys && chmod 600 /root/.ssh/authorized_keys'
@@ -69,6 +73,16 @@ ans()     { ans_run "$DBB_ANSIBLE_IMAGE" "$@"; }
 ans_sh()  { ans_run --entrypoint sh "$DBB_ANSIBLE_IMAGE" -c "$1"; }
 node()    { docker exec "$(ansible_node)" "$@"; }
 node_sh() { docker exec "$(ansible_node)" bash -c "$1"; }
+
+# Print managed-node SSH diagnostics after a failed controller run.
+ansible_diag() {
+  {
+    printf -- '--- managed-node sshd log ---\n'
+    docker exec "$(ansible_node)" journalctl -u sshd --no-pager -n 40 2>&1 || true
+    printf -- '--- /root/.ssh ---\n'
+    docker exec "$(ansible_node)" ls -lan /root/.ssh 2>&1 || true
+  } >&2
+}
 
 ansible_shell() {
   say "${C_DIM}Ansible controller. Playbooks: workspace/$LAB_ID (at /work). Target: managed-node. Type exit to leave.${C_OFF}"
