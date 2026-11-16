@@ -1,0 +1,6 @@
+$ kubectl -n billing get pods
+NAME                      READY   STATUS             RESTARTS     AGE
+worker-6b69659bf5-5k4xr   0/1     CrashLoopBackOff   1 (3s ago)   4s
+
+$ kubectl -n billing logs deploy/worker --previous
+FATAL: QUEUE_URL is not set

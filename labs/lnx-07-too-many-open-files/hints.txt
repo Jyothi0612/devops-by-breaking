@@ -1,0 +1,10 @@
+Check `journalctl -u connection-api` while running `/opt/connection-api/load.py`, and
+compare `/etc/security/limits.d/apiworker.conf` against the actual open-file limit of
+the running process in `/proc/<pid>/limits`.
+---
+Why does `/proc/<pid>/limits` not match `/etc/security/limits.d/apiworker.conf`?
+Remember how PAM limits apply versus how `systemd` launches a service.
+---
+Inspect `systemctl cat connection-api`. Set `LimitNOFILE=256` (within the 128–4096
+bound) in a systemd drop-in (`/etc/systemd/system/connection-api.service.d/limits.conf`),
+then run `systemctl daemon-reload && systemctl restart connection-api`.

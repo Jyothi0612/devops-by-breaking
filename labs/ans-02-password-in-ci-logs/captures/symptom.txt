@@ -1,0 +1,38 @@
+$ ansible-playbook -i inventory.ini deploy.yml
+
+PLAY [Deploy database credentials] *********************************************
+
+TASK [Write database env file] *************************************************
+ok: [managed-node]
+
+TASK [Log deployment result] ***************************************************
+ok: [managed-node] => {
+    "db_cfg": {
+        "ansible_facts": {
+            "discovered_interpreter_python": "/usr/bin/python3.9"
+        },
+        "backup": "",
+        "changed": false,
+        "diff": [
+            {
+                "after": "",
+                "after_header": "/etc/orders-db.env (content)",
+                "before": "",
+                "before_header": "/etc/orders-db.env (content)"
+            },
+            {
+                "after_header": "/etc/orders-db.env (file attributes)",
+                "before_header": "/etc/orders-db.env (file attributes)"
+            }
+        ],
+        "failed": false,
+        "msg": "",
+        "warnings": [
+            "Platform linux on host managed-node is using the discovered Python interpreter at /usr/bin/python3.9, but future installation of another Python interpreter could change the meaning of that path. See https://docs.ansible.com/ansible-core/2.18/reference_appendices/interpreter_discovery.html for more information."
+        ]
+    }
+}
+
+PLAY RECAP *********************************************************************
+managed-node               : ok=2    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+

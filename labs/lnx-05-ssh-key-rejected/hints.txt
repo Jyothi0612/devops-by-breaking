@@ -1,0 +1,9 @@
+`sshd` logs why it rejects a public key even when the client only sees
+`Permission denied (publickey).` Check the `sshd` journal on the server.
+---
+`StrictModes yes` in `/etc/ssh/sshd_config` makes `sshd` check permissions not only on
+`authorized_keys` and `.ssh`, but also on the user's home directory.
+---
+Inspect `ls -ld /home/deploy /home/deploy/.ssh /home/deploy/.ssh/authorized_keys`.
+Restore safe permissions on `/home/deploy` (`chmod 755 /home/deploy`) while keeping
+`StrictModes yes`.

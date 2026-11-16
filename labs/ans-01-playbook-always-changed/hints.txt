@@ -1,0 +1,8 @@
+Open `workspace/ans-01/site.yml` and look at the module used by all three tasks.
+---
+`ansible.builtin.command` runs an arbitrary shell command and always reports `changed`
+unless told otherwise — it does not check desired state.
+---
+Replace the three `ansible.builtin.command` tasks in `site.yml` with
+`ansible.builtin.file` (for `/opt/catalogue`) and `ansible.builtin.copy` (for
+`/opt/catalogue/app.conf` with `content: "env=prod\n"` and `mode: "0644"`).

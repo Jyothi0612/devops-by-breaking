@@ -1,0 +1,9 @@
+`docker run --rm dbb-sec-01:app ls /app` does not show `.env`, yet the scanner found
+`DBB_DEMO_SECRET_NOT_REAL_01` inside `dbb-sec-01:app`. Inspect `docker history dbb-sec-01:app`.
+---
+Each `COPY` and `RUN` instruction in a `Dockerfile` creates an immutable layer. Deleting
+`/app/.env` in a later `RUN` layer hides it from the final filesystem, but the earlier
+`COPY . /app` layer still contains it.
+---
+Add `.env` to `.dockerignore` in `workspace/sec-01/` (and/or stop copying `.env`), then
+rebuild `dbb-sec-01:app` with `./build.sh` so `.env` never enters any layer.

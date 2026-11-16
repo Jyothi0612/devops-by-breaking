@@ -1,0 +1,9 @@
+`CrashLoopBackOff` means the container starts and exits non-zero. Check its logs with
+`kubectl -n billing logs -l app=worker --previous`.
+---
+The container logs `FATAL: QUEUE_URL is not set`. Inspect `deploy/worker` to see
+where its environment variables come from, then inspect that ConfigMap.
+---
+`ConfigMap/worker-config` has `QUEUE_URI` instead of `QUEUE_URL`. Update the key to
+`QUEUE_URL` in `worker-config` and restart the `worker` pod (`kubectl -n billing
+delete pods -l app=worker`).

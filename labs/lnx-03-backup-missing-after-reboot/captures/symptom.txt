@@ -1,0 +1,13 @@
+$ cat /var/log/catalogue-backup.log
+/opt/catalogue/backup.sh: line 3: archive-catalogue: command not found
+
+$ ls -la /var/backups
+total 12
+drwxr-xr-x 2 root root 4096 Nov 16 02:45 .
+drwxr-xr-x 1 root root 4096 Nov 16 02:45 ..
+
+$ cat /etc/cron.d/catalogue-backup
+SHELL=/bin/sh
+PATH=/usr/bin:/bin
+@reboot root /opt/catalogue/backup.sh >> /var/log/catalogue-backup.log 2>&1
+

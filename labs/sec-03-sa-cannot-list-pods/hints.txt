@@ -1,0 +1,9 @@
+Check `kubectl -n ops auth can-i list pods --as=system:serviceaccount:ops:pod-watcher`
+and list the `Role` and `RoleBinding` objects in namespace `ops`.
+---
+`Role/pod-reader` exists in `ops`, but there is no `RoleBinding` linking it to
+`ServiceAccount/pod-watcher`.
+---
+Create a `RoleBinding` in namespace `ops` binding `pod-reader` to `pod-watcher`
+(do **not** bind `cluster-admin`):
+`kubectl -n ops create rolebinding pod-watcher-read --role=pod-reader --serviceaccount=ops:pod-watcher`.

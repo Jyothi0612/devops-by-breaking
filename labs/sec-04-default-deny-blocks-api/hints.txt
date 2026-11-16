@@ -1,0 +1,10 @@
+`NetworkPolicy/default-deny-all` blocks both `Ingress` and `Egress` for all pods in
+namespace `payments`. Deleting it would expose `api` to `rogue` pods.
+---
+`frontend` needs two `Egress` rules (DNS on UDP/TCP port 53 to `kube-system`, and
+TCP port 80 to `app: api`), and `api` needs an `Ingress` rule allowing TCP port 80
+from `app: frontend`.
+---
+Create `NetworkPolicy` objects in `payments` for `podSelector: {app: frontend}`
+(egress to `kube-system` port 53 + `app: api` port 80) and `podSelector: {app: api}`
+(ingress from `app: frontend` port 80), leaving `default-deny-all` in place.

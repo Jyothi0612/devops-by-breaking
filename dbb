@@ -5,7 +5,7 @@ set -u
 
 DBB_ROOT="$(cd "$(dirname "$0")" && pwd)"
 export DBB_ROOT
-for _f in core check server k8s terraform verify; do
+for _f in core check server k8s terraform docker ansible verify; do
   # shellcheck source=/dev/null
   . "$DBB_ROOT/lib/$_f.sh"
 done
@@ -117,15 +117,33 @@ cmd_list() {
 }
 
 cmd_next() {
-  local id
-  for id in $(lab_ids); do
+  local path_name="" ids="" id
+  while [ $# -gt 0 ]; do
+    case "$1" in
+      --path) [ -n "${2:-}" ] || die "next --path requires a path name"; path_name="$2"; shift 2 ;;
+      --path=*) path_name="${1#--path=}"; shift ;;
+      *) die "unknown option $1" ;;
+    esac
+  done
+  if [ -n "$path_name" ]; then
+    ids="$(awk -F'|' -v p="\`$path_name\`" '$0 ~ p { gsub(/`/, "", $4); print $4; exit }' "$DBB_ROOT/docs/PATHS.md")"
+    [ -n "$ids" ] || die "unknown path '$path_name' (see docs/PATHS.md)"
+  else
+    ids="$(lab_ids)"
+  fi
+  for id in $ids; do
+    [ -n "$(lab_dir "$id" 2>/dev/null || true)" ] || continue
     is_solved "$id" && continue
     lab_load "$id"
     say "Next: ${C_BLD}$id${C_OFF}  $TITLE  (L$LEVEL, about $MINUTES min)"
     say "      ./dbb start $id"
     return 0
   done
-  say "You have solved every lab. Add one: see CONTRIBUTING.md"
+  if [ -n "$path_name" ]; then
+    say "You have solved every available lab on path '$path_name'."
+  else
+    say "You have solved every lab. Add one: see CONTRIBUTING.md"
+  fi
 }
 
 # ---------------------------------------------------------------- start / stop / reset

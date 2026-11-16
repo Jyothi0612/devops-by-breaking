@@ -58,6 +58,7 @@ Copy the closest existing lab and change it.
 |---|---|
 | `server` | `srv <cmd>`, `srv_sh '<script>'`, `srv_put <file> <path>` |
 | `k8s` | `k <kubectl args>`, `k_apply <file>` |
+| `docker` | `docker_launch`, `docker_running`, `docker_http`, `docker_isolated`; edit files in `$DBB_WORK`, recreate with `./run.sh` |
 | `terraform` | `tf <args>`, `tf_sh '<script>'`, files live in `$DBB_WORK` |
 | all | `check "<objective>" <cmd>`, `wait_for <secs> <cmd>`, `state_set <key> <value>`, `state_get <key>` |
 

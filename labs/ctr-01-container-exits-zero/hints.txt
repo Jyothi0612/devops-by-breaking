@@ -1,0 +1,5 @@
+Compare docker ps -a with docker logs. An exit code of zero is not a promise that a service is available.
+---
+Inspect start.sh and nginx.conf. Which process does Docker track, and what happens when that process starts a daemon?
+---
+nginx can run in the foreground. Change its daemon setting, then recreate the container with ./run.sh.

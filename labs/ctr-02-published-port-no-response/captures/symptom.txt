@@ -1,0 +1,8 @@
+$ docker port dbb-ctr-02-web
+80/tcp -> 127.0.0.1:49235
+
+$ docker exec dbb-ctr-02-web wget -qO- http://127.0.0.1
+catalogue: ready
+
+$ curl --max-time 3 http://127.0.0.1:49235
+curl: (52) Empty reply from server

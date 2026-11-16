@@ -1,0 +1,9 @@
+Run `ansible-playbook -i inventory.ini deploy.yml -vvv` in `workspace/ans-02` and
+search the output for `DBB_DEMO_ANSIBLE_PW_NOT_REAL_02`.
+---
+When CI runs Ansible with `-vvv` (or prints a `register`ed variable via `debug`),
+Ansible logs module arguments (`line: DB_PASS=...`) unless `no_log: true` is set.
+---
+Add `no_log: true` to both the `ansible.builtin.lineinfile` task and the
+`ansible.builtin.debug` task (or remove the `debug` task while keeping `no_log: true`
+on the secret-handling task) in `workspace/ans-02/deploy.yml`.

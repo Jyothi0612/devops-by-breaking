@@ -1,0 +1,11 @@
+Look closely at the `terraform plan` output: `service_token[2]` is marked for
+destruction, and `worker_fingerprint` changes. Why did removing `"billing"` (the
+middle item) affect `"worker"`?
+---
+`count` addresses resource instances by numeric index (`0, 1, 2`). Removing index `1`
+shifts `"worker"` from `[2]` to `[1]`, so Terraform treats `[1]` as `"worker"` and
+destroys `[2]`.
+---
+Migrate `random_password.service_token` from `count` to `for_each = toset(local.services)`,
+add `moved` blocks from `[0]` -> `["api"]` and `[2]` -> `["worker"]`, then run
+`terraform apply` so only `[1]` (`billing`) is destroyed.

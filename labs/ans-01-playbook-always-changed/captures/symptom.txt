@@ -1,0 +1,16 @@
+$ ansible-playbook -i inventory.ini site.yml
+
+PLAY [Configure catalogue app] *************************************************
+
+TASK [Ensure /opt/catalogue directory exists] **********************************
+changed: [managed-node]
+
+TASK [Write app configuration] *************************************************
+changed: [managed-node]
+
+TASK [Set config permissions] **************************************************
+changed: [managed-node]
+
+PLAY RECAP *********************************************************************
+managed-node               : ok=3    changed=3    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+

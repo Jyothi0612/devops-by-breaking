@@ -37,15 +37,35 @@ told you not to touch. **The check knows the difference.**
 
 ## The labs
 
-Three labs are implemented. See [build progress](docs/PROGRESS.md) for completed
+Twelve labs are implemented on this development branch. The nine new v0.2 labs await
+the [author solve-through gate](docs/AUTHOR-CHECKLIST.md). See [build progress](docs/PROGRESS.md) for completed
 work, verification evidence and the remaining release gates.
+
+To try these development labs after cloning, run `git switch v0.2/docker-labs`.
 
 <!-- catalog:start -->
 | Lab | Track | Level | Time | The symptom |
 |---|---|---|---|---|
+| [ans-01](labs/ans-01-playbook-always-changed/) | ansible | L1 | 15 min | Playbook reports changed on every run |
+| [ans-02](labs/ans-02-password-in-ci-logs/) | ansible | L2 | 20 min | Database password appears in CI logs |
+| [ctr-01](labs/ctr-01-container-exits-zero/) | containers | L1 | 10 min | Container exits immediately with code 0 |
+| [ctr-02](labs/ctr-02-published-port-no-response/) | containers | L1 | 10 min | Port published, but the catalogue is unreachable |
 | [k8s-01](labs/k8s-01-service-no-endpoints/) | kubernetes | L1 | 15 min | Service has no endpoints, curl times out |
+| [k8s-02](labs/k8s-02-pod-crashloopbackoff/) | kubernetes | L1 | 15 min | Pod in CrashLoopBackOff |
+| [k8s-04](labs/k8s-04-rollout-stuck-old-pods/) | kubernetes | L2 | 20 min | Rollout stuck, old pods never replaced |
+| [k8s-06](labs/k8s-06-pod-imagepullbackoff/) | kubernetes | L1 | 15 min | ImagePullBackOff |
 | [lnx-01](labs/lnx-01-disk-full-du-empty/) | linux | L1 | 15 min | Disk 100% full, but du finds nothing |
+| [lnx-03](labs/lnx-03-backup-missing-after-reboot/) | linux | L1 | 15 min | Backup works by hand, never from cron |
+| [lnx-05](labs/lnx-05-ssh-key-rejected/) | linux | L1 | 15 min | SSH key login rejected |
+| [lnx-07](labs/lnx-07-too-many-open-files/) | linux | L2 | 20 min | Too many open files under load |
+| [net-01](labs/net-01-site-returns-502/) | networking | L1 | 15 min | Site returns 502 Bad Gateway |
+| [sec-01](labs/sec-01-secret-in-image-layer/) | security | L2 | 20 min | Scan: secret found in image |
+| [sec-02](labs/sec-02-secret-in-git-history/) | security | L2 | 20 min | Secret "deleted" last week is still in the repo |
+| [sec-03](labs/sec-03-sa-cannot-list-pods/) | security | L1 | 15 min | Forbidden: cannot list resource "pods" |
+| [sec-04](labs/sec-04-default-deny-blocks-api/) | security | L2 | 20 min | Default-deny applied, frontend cannot reach the API |
+| [sec-05](labs/sec-05-pod-security-restricted/) | security | L2 | 20 min | Deployment creates no pods: violates PodSecurity "restricted" |
 | [tf-01](labs/tf-01-rename-plans-destroy/) | terraform | L1 | 15 min | Renamed a resource, plan wants to destroy the database password |
+| [tf-02](labs/tf-02-remove-item-replaces-others/) | terraform | L2 | 20 min | Removed one list item, plan replaces the others |
 <!-- catalog:end -->
 
 More are on the way: Linux, networking, containers, Kubernetes, Terraform, Ansible, a

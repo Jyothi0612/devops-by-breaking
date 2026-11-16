@@ -1,0 +1,11 @@
+`deploy/agent` exists, yet no pods are running. Check `kubectl -n vault describe rs
+-l app=agent` for `FailedCreate` events.
+---
+The ReplicaSet event lists the exact `PodSecurity "restricted:latest"` fields
+missing from `deploy/agent`: `allowPrivilegeEscalation`, `capabilities.drop`,
+`runAsNonRoot`, and `seccompProfile`.
+---
+Do not relax the namespace label. Add a compliant `securityContext` on the pod
+(`runAsNonRoot: true`, `runAsUser: 1000`, `seccompProfile.type: RuntimeDefault`)
+and container (`allowPrivilegeEscalation: false`, `capabilities.drop: ["ALL"]`) in
+`deploy/agent`.

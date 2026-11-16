@@ -1,0 +1,9 @@
+`502 Bad Gateway` means nginx could not get a valid response from its upstream. Check
+`/var/log/nginx/error.log` to see which upstream address nginx tried to reach.
+---
+Compare the upstream port in `/var/log/nginx/error.log` and `/etc/nginx/conf.d/orders.conf`
+with what is actually listening on the host using `ss -tlnp`.
+---
+`orders-backend` is listening on `127.0.0.1:8081`, while `/etc/nginx/conf.d/orders.conf`
+has `proxy_pass http://127.0.0.1:8080;`. Update `proxy_pass` to `http://127.0.0.1:8081`,
+run `nginx -t`, and reload `nginx`.

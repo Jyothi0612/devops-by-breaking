@@ -1,0 +1,8 @@
+Inspect the failing pod in namespace `web` with `kubectl -n web describe pod` and
+look at the `Events` and `Image:` field.
+---
+The image tag in `deploy/frontend` is `nginx:1.29-alpin` (missing the trailing `e`),
+which does not exist in the cluster's preloaded images or registry.
+---
+Update `deploy/frontend` to the pinned tag `nginx:1.29-alpine` (not `latest`):
+`kubectl -n web set image deploy/frontend nginx=nginx:1.29-alpine`.

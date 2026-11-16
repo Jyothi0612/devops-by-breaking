@@ -1,0 +1,9 @@
+Look at `kubectl -n checkout get pods` and `kubectl -n checkout get deploy api`.
+Why is one pod `0/1 Running` while two older pods remain `1/1 Running`?
+---
+Run `kubectl -n checkout describe pod` on the `0/1` pod and compare its
+`Readiness:` probe port with the container's listening port (`containerPort: 80`).
+---
+`deploy/api`'s `readinessProbe.httpGet.port` was changed to `8080` while nginx
+listens on `80`. Patch `readinessProbe.httpGet.port` back to `80` and wait for the
+rollout to finish.

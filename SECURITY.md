@@ -17,9 +17,15 @@ and Windows that host is Docker's Linux virtual machine, not your computer. On L
 is your machine. What limits the exposure:
 
 - These containers use a **private cgroup namespace** and do **not** mount the host's
-  `/sys/fs/cgroup`, the Docker socket, or any host directory except a read-only image archive.
+  `/sys/fs/cgroup`, the Docker socket, or any host directory except a read-only image archive and, for the image-pull lab, a read-only registry
+  configuration file.
 - No lab publishes a port on anything other than `127.0.0.1`.
 - Lab scripts are short and readable: `labs/<id>/setup.sh` is everything a lab does.
+
+Container labs (`ctr-*`) run unprivileged with a 128 MB memory limit and a 128-process
+limit. Only their workspace configuration, startup script and page are bind-mounted,
+read-only. Their host shell can run Docker commands as your user; it is not an agent
+sandbox. Published ports bind only to `127.0.0.1`.
 
 Terraform labs run unprivileged, as your own user, with `--network none`.
 
