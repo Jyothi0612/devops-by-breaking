@@ -50,12 +50,18 @@ To try these development labs after cloning, run `git switch v0.2/docker-labs`.
 | [ctr-02](labs/ctr-02-published-port-no-response/) | containers | L1 | 10 min | Port published, but the catalogue is unreachable |
 | [k8s-01](labs/k8s-01-service-no-endpoints/) | kubernetes | L1 | 15 min | Service has no endpoints, curl times out |
 | [k8s-02](labs/k8s-02-pod-crashloopbackoff/) | kubernetes | L1 | 15 min | Pod in CrashLoopBackOff |
+| [k8s-04](labs/k8s-04-rollout-stuck-old-pods/) | kubernetes | L2 | 20 min | Rollout stuck, old pods never replaced |
 | [k8s-06](labs/k8s-06-pod-imagepullbackoff/) | kubernetes | L1 | 15 min | ImagePullBackOff |
 | [lnx-01](labs/lnx-01-disk-full-du-empty/) | linux | L1 | 15 min | Disk 100% full, but du finds nothing |
 | [lnx-03](labs/lnx-03-backup-missing-after-reboot/) | linux | L1 | 15 min | Backup works by hand, never from cron |
 | [lnx-05](labs/lnx-05-ssh-key-rejected/) | linux | L1 | 15 min | SSH key login rejected |
 | [lnx-07](labs/lnx-07-too-many-open-files/) | linux | L2 | 20 min | Too many open files under load |
 | [net-01](labs/net-01-site-returns-502/) | networking | L1 | 15 min | Site returns 502 Bad Gateway |
+| [sec-01](labs/sec-01-secret-in-image-layer/) | security | L2 | 20 min | Scan: secret found in image |
+| [sec-02](labs/sec-02-secret-in-git-history/) | security | L2 | 20 min | Secret "deleted" last week is still in the repo |
+| [sec-03](labs/sec-03-sa-cannot-list-pods/) | security | L1 | 15 min | Forbidden: cannot list resource "pods" |
+| [sec-04](labs/sec-04-default-deny-blocks-api/) | security | L2 | 20 min | Default-deny applied, frontend cannot reach the API |
+| [sec-05](labs/sec-05-pod-security-restricted/) | security | L2 | 20 min | Deployment creates no pods: violates PodSecurity "restricted" |
 | [tf-01](labs/tf-01-rename-plans-destroy/) | terraform | L1 | 15 min | Renamed a resource, plan wants to destroy the database password |
 | [tf-02](labs/tf-02-remove-item-replaces-others/) | terraform | L2 | 20 min | Removed one list item, plan replaces the others |
 <!-- catalog:end -->

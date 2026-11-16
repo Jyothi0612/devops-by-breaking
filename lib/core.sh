@@ -111,6 +111,9 @@ lab_destroy() {
   ids="$(docker volume ls -q --filter "label=dbb.lab=$LAB_ID")"
   # shellcheck disable=SC2086
   [ -z "$ids" ] || docker volume rm -f $ids >/dev/null 2>&1
+  ids="$(docker images -q --filter "label=dbb.lab=$LAB_ID")"
+  # shellcheck disable=SC2086
+  [ -z "$ids" ] || docker rmi -f $ids >/dev/null 2>&1
   rm -rf "$DBB_WORK" "$(state_dir)"
 }
 

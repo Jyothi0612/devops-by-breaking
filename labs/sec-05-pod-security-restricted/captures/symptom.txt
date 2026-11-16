@@ -1,0 +1,13 @@
+$ kubectl -n vault get pods
+NAME                    READY   STATUS        RESTARTS   AGE
+agent-b77866467-cbq7d   1/1     Terminating   0          2s
+
+$ kubectl -n vault describe rs -l app=agent | grep -A 3 Events:
+Events:
+  Type     Reason        Age   From                   Message
+  ----     ------        ----  ----                   -------
+  Warning  FailedCreate  1s    replicaset-controller  Error creating: pods "agent-6fdcc4f44d-sm95v" is forbidden: violates PodSecurity "restricted:latest": allowPrivilegeEscalation != false (container "agent" must set securityContext.allowPrivilegeEscalation=false), unrestricted capabilities (container "agent" must set securityContext.capabilities.drop=["ALL"]), runAsNonRoot != true (pod or container "agent" must set securityContext.runAsNonRoot=true), seccompProfile (pod or container "agent" must set securityContext.seccompProfile.type to "RuntimeDefault" or "Localhost")
+
+$ kubectl get ns vault --show-labels
+NAME    STATUS   AGE   LABELS
+vault   Active   2s    kubernetes.io/metadata.name=vault,pod-security.kubernetes.io/enforce-version=latest,pod-security.kubernetes.io/enforce=restricted

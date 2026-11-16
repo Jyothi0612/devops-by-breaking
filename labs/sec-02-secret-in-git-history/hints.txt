@@ -1,0 +1,9 @@
+`git status` and `ls` show no `.env` file in `workspace/sec-02/repo`, yet the
+secret is still in git. Search the commit history with `git log -S`.
+---
+Deleting a file in a later commit (`git rm .env`) only records a deletion in the new
+commit; the earlier commit and its blob object remain reachable in git history.
+---
+Rewrite history to purge `.env` from all commits (e.g. `git filter-branch --index-filter
+'git rm --cached --ignore-unmatch .env' -- --all`), expire reflogs + `git gc --prune=now`,
+and add `.env` to `.gitignore`.

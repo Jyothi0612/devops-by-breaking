@@ -1,0 +1,42 @@
+$ ls -la workspace/sec-02/repo
+total 16
+drwxr-xr-x@  5 sivajyothipamarthy  staff  160 Nov 16 04:50 .
+drwxr-xr-x@  6 sivajyothipamarthy  staff  192 Nov 16 04:50 ..
+drwxr-xr-x@ 12 sivajyothipamarthy  staff  384 Nov 16 04:50 .git
+-rw-r--r--@  1 sivajyothipamarthy  staff   35 Nov 16 04:50 README.md
+-rw-r--r--@  1 sivajyothipamarthy  staff   10 Nov 16 04:50 app.conf
+
+$ git -C workspace/sec-02/repo log --oneline
+0a0cf72 Update README
+05b4924 Remove accidental .env file
+37b944e Add service config
+6c8e76b Initial commit
+
+$ git -C workspace/sec-02/repo log -S DBB_DEMO_GIT_SECRET_NOT_REAL_02 -p
+commit 05b49244c2864b813febd2b7843bcdb6663de1bc
+Author: Dev <dev@example.invalid>
+Date:   Mon Nov 16 04:50:27 2026 +0100
+
+    Remove accidental .env file
+
+diff --git a/.env b/.env
+deleted file mode 100644
+index 17c8cd0..0000000
+--- a/.env
++++ /dev/null
+@@ -1 +0,0 @@
+-PAYMENTS_SIGNING_KEY=DBB_DEMO_GIT_SECRET_NOT_REAL_02
+
+commit 37b944e7269b321f07f7110d6d43b39c159a5356
+Author: Dev <dev@example.invalid>
+Date:   Mon Nov 16 04:50:27 2026 +0100
+
+    Add service config
+
+diff --git a/.env b/.env
+new file mode 100644
+index 0000000..17c8cd0
+--- /dev/null
++++ b/.env
+@@ -0,0 +1 @@
++PAYMENTS_SIGNING_KEY=DBB_DEMO_GIT_SECRET_NOT_REAL_02

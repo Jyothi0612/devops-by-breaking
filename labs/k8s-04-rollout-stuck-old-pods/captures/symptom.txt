@@ -1,0 +1,14 @@
+$ kubectl -n checkout get pods
+NAME                   READY   STATUS    RESTARTS   AGE
+api-5d45d8b887-xnt54   0/1     Running   0          1s
+api-76d49884f6-rt6lh   1/1     Running   0          5s
+api-76d49884f6-vq7hn   1/1     Running   0          5s
+
+$ kubectl -n checkout get deploy api
+NAME   READY   UP-TO-DATE   AVAILABLE   AGE
+api    2/2     1            2           5s
+
+$ kubectl -n checkout describe pod -l app=api | grep -E "Readiness|Unhealthy" | head -n 6
+    Readiness:      http-get http://:8080/ delay=1s timeout=1s period=3s successThreshold=1 failureThreshold=3
+    Readiness:      http-get http://:80/ delay=1s timeout=1s period=3s successThreshold=1 failureThreshold=3
+    Readiness:      http-get http://:80/ delay=1s timeout=1s period=3s successThreshold=1 failureThreshold=3

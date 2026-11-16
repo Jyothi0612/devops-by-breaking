@@ -1,0 +1,9 @@
+$ kubectl -n ops get pods --as=system:serviceaccount:ops:pod-watcher
+Error from server (Forbidden): pods is forbidden: User "system:serviceaccount:ops:pod-watcher" cannot list resource "pods" in API group "" in the namespace "ops"
+
+$ kubectl -n ops auth can-i list pods --as=system:serviceaccount:ops:pod-watcher
+no
+
+$ kubectl -n ops get role,rolebinding
+NAME                                        CREATED AT
+role.rbac.authorization.k8s.io/pod-reader   2026-11-16T03:57:59Z
