@@ -77,6 +77,14 @@ ansible_diag() {
     docker exec "$(ansible_node)" journalctl -u sshd --no-pager -n 40 2>&1 || true
     printf -- '--- managed-node state ---\n'
     docker exec "$(ansible_node)" sh -c 'systemctl is-system-running; systemctl --failed --no-legend; ls -l /run/nologin /etc/nologin; journalctl -u systemd-user-sessions --no-pager -n 15' 2>&1 || true
+    printf -- '--- sshd -d on port 2222 ---\n'
+    docker exec -d "$(ansible_node)" sh -c '/usr/sbin/sshd -d -o LogLevel=DEBUG3 -p 2222 >/tmp/sshd-debug.log 2>&1'
+    sleep 2
+    ans_run --entrypoint ssh "$DBB_ANSIBLE_IMAGE" -p 2222 -i /work/.ssh/id_ed25519 \
+      -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o BatchMode=yes \
+      root@managed-node true 2>&1 || true
+    sleep 1
+    docker exec "$(ansible_node)" sh -c 'grep -iE "pam|account|denied|selinux|shadow|expire|fatal|error" /tmp/sshd-debug.log | head -40; grep ^root: /etc/shadow; cat /etc/pam.d/password-auth | grep -v "^#"; getenforce 2>&1; ls /sys/fs/selinux 2>&1 | head -3' 2>&1 || true
     printf -- '--- /root/.ssh ---\n'
     docker exec "$(ansible_node)" ls -lan /root/.ssh 2>&1 || true
   } >&2
