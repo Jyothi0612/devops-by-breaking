@@ -70,6 +70,16 @@ ans_sh()  { ans_run --entrypoint sh "$DBB_ANSIBLE_IMAGE" -c "$1"; }
 node()    { docker exec "$(ansible_node)" "$@"; }
 node_sh() { docker exec "$(ansible_node)" bash -c "$1"; }
 
+# Print managed-node SSH diagnostics after a failed controller run.
+ansible_diag() {
+  {
+    printf -- '--- managed-node sshd log ---\n'
+    docker exec "$(ansible_node)" journalctl -u sshd --no-pager -n 40 2>&1 || true
+    printf -- '--- /root/.ssh ---\n'
+    docker exec "$(ansible_node)" ls -lan /root/.ssh 2>&1 || true
+  } >&2
+}
+
 ansible_shell() {
   say "${C_DIM}Ansible controller. Playbooks: workspace/$LAB_ID (at /work). Target: managed-node. Type exit to leave.${C_OFF}"
   ans_run -it --entrypoint sh "$DBB_ANSIBLE_IMAGE"
