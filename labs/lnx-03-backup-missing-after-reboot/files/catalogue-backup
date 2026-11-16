@@ -1,0 +1,3 @@
+SHELL=/bin/sh
+PATH=/usr/bin:/bin
+@reboot root /opt/catalogue/backup.sh >> /var/log/catalogue-backup.log 2>&1

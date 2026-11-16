@@ -1,0 +1,53 @@
+$ terraform plan -no-color
+random_password.service_token[0]: Refreshing state... [id=none]
+random_password.service_token[1]: Refreshing state... [id=none]
+random_password.service_token[2]: Refreshing state... [id=none]
+
+Terraform used the selected providers to generate the following execution
+plan. Resource actions are indicated with the following symbols:
+  - destroy
+-/+ destroy and then create replacement
+
+Terraform will perform the following actions:
+
+  # random_password.service_token[1] must be replaced
+-/+ resource "random_password" "service_token" {
+      ~ bcrypt_hash = (sensitive value)
+      ~ id          = "none" -> (known after apply)
+      ~ keepers     = { # forces replacement
+          ~ "service" = "billing" -> "worker"
+        }
+      ~ result      = (sensitive value)
+        # (10 unchanged attributes hidden)
+    }
+
+  # random_password.service_token[2] will be destroyed
+  # (because index [2] is out of range for count)
+  - resource "random_password" "service_token" {
+      - bcrypt_hash = (sensitive value) -> null
+      - id          = "none" -> null
+      - keepers     = {
+          - "service" = "worker"
+        } -> null
+      - length      = 24 -> null
+      - lower       = true -> null
+      - min_lower   = 0 -> null
+      - min_numeric = 0 -> null
+      - min_special = 0 -> null
+      - min_upper   = 0 -> null
+      - number      = true -> null
+      - numeric     = true -> null
+      - result      = (sensitive value) -> null
+      - special     = false -> null
+      - upper       = true -> null
+    }
+
+Plan: 1 to add, 0 to change, 2 to destroy.
+
+Changes to Outputs:
+  ~ worker_fingerprint = "3a6480e359c360c506974d8e9c473115760671d94ae9b3deaa0ba909a6af9dc4" -> (known after apply)
+
+─────────────────────────────────────────────────────────────────────────────
+
+Note: You didn't use the -out option to save this plan, so Terraform can't
+guarantee to take exactly these actions if you run "terraform apply" now.

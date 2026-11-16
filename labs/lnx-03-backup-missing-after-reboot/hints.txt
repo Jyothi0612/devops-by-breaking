@@ -1,0 +1,12 @@
+Compare how you run `/opt/catalogue/backup.sh` in an interactive shell versus how
+`crond` runs it. What two things differ between your shell and a cron job's
+environment?
+---
+Check the log file referenced by `/etc/cron.d/catalogue-backup` (`/var/log/catalogue-backup.log`)
+and look at what `PATH` and working directory are set when `crond` runs
+`/opt/catalogue/backup.sh`.
+---
+`/opt/catalogue/backup.sh` calls `archive-catalogue ./data /var/backups/catalogue.tgz`
+using a bare command name (which lives in `/usr/local/bin`) and a relative path
+(`./data`). Replace both with full paths in `/opt/catalogue/backup.sh` so the script
+is self-contained regardless of `PATH` or working directory.

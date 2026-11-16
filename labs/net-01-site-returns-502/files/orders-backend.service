@@ -1,0 +1,12 @@
+[Unit]
+Description=Orders Backend HTTP Service
+After=network.target
+
+[Service]
+Type=simple
+User=nobody
+ExecStart=/usr/bin/python3 /opt/orders-backend/server.py
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

@@ -38,14 +38,20 @@ k8s_archive() {
 
 k8s_start() {
   local tar
+  set --
+  if [ -f "$LAB_DIR/files/registries.yaml" ]; then
+    set -- -v "$LAB_DIR/files/registries.yaml:/etc/rancher/k3s/registries.yaml:ro"
+  fi
   tar="$(k8s_archive)" || exit 2
   ensure_image "$IMG_K3S"
   docker run -d --name "$(k8s_name)" --hostname k3s \
     --label "dbb.lab=$LAB_ID" \
     --privileged --cgroupns=private --tmpfs /run --tmpfs /var/run \
+    "$@" \
     -v "$tar:/var/lib/rancher/k3s/agent/images/dbb.tar:ro" \
     "$(img_plain "$IMG_K3S")" server \
       --disable=traefik --disable=metrics-server --disable=servicelb \
+      --disable-default-registry-endpoint \
       --write-kubeconfig-mode=644 >/dev/null
   wait_for 120 k8s_ready || die "k3s did not become ready"
 }

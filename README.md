@@ -37,7 +37,7 @@ told you not to touch. **The check knows the difference.**
 
 ## The labs
 
-Five labs are implemented on this development branch. The two container labs await
+Twelve labs are implemented on this development branch. The nine new v0.2 labs await
 the [author solve-through gate](docs/AUTHOR-CHECKLIST.md). See [build progress](docs/PROGRESS.md) for completed
 work, verification evidence and the remaining release gates.
 
@@ -47,8 +47,15 @@ work, verification evidence and the remaining release gates.
 | [ctr-01](labs/ctr-01-container-exits-zero/) | containers | L1 | 10 min | Container exits immediately with code 0 |
 | [ctr-02](labs/ctr-02-published-port-no-response/) | containers | L1 | 10 min | Port published, but the catalogue is unreachable |
 | [k8s-01](labs/k8s-01-service-no-endpoints/) | kubernetes | L1 | 15 min | Service has no endpoints, curl times out |
+| [k8s-02](labs/k8s-02-pod-crashloopbackoff/) | kubernetes | L1 | 15 min | Pod in CrashLoopBackOff |
+| [k8s-06](labs/k8s-06-pod-imagepullbackoff/) | kubernetes | L1 | 15 min | ImagePullBackOff |
 | [lnx-01](labs/lnx-01-disk-full-du-empty/) | linux | L1 | 15 min | Disk 100% full, but du finds nothing |
+| [lnx-03](labs/lnx-03-backup-missing-after-reboot/) | linux | L1 | 15 min | Backup works by hand, never from cron |
+| [lnx-05](labs/lnx-05-ssh-key-rejected/) | linux | L1 | 15 min | SSH key login rejected |
+| [lnx-07](labs/lnx-07-too-many-open-files/) | linux | L2 | 20 min | Too many open files under load |
+| [net-01](labs/net-01-site-returns-502/) | networking | L1 | 15 min | Site returns 502 Bad Gateway |
 | [tf-01](labs/tf-01-rename-plans-destroy/) | terraform | L1 | 15 min | Renamed a resource, plan wants to destroy the database password |
+| [tf-02](labs/tf-02-remove-item-replaces-others/) | terraform | L2 | 20 min | Removed one list item, plan replaces the others |
 <!-- catalog:end -->
 
 More are on the way: Linux, networking, containers, Kubernetes, Terraform, Ansible, a

@@ -1,0 +1,2 @@
+#!/bin/sh
+exec ssh -i /root/lab-client -o BatchMode=yes -o IdentitiesOnly=yes -o ConnectTimeout=3 -o UserKnownHostsFile=/root/lab-known-hosts -o StrictHostKeyChecking=yes deploy@127.0.0.1 id -un

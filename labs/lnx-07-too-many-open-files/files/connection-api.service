@@ -1,0 +1,12 @@
+[Unit]
+Description=Catalogue connection API
+After=network.target
+[Service]
+User=apiworker
+ExecStart=/usr/bin/python3 -u /opt/connection-api/server.py
+LimitNOFILE=64
+MemoryMax=128M
+TasksMax=128
+Restart=on-failure
+[Install]
+WantedBy=multi-user.target

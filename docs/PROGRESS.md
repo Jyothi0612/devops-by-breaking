@@ -1,8 +1,8 @@
 # Build progress
 
-Reviewed 2026-11-15 against the local v2 build plan and commit `34a8e70`.
-The v0.1 foundation is public. The `v0.2/docker-labs` branch adds the Docker runtime
-and two container labs; they await the author gate before merging.
+Reviewed 2026-11-16 against the local v2 build plan. The v0.1 foundation is public.
+The `v0.2/docker-labs` branch contains all 12 planned v0.2 lab implementations.
+Nine new labs await the author gate before merging; this is not a v0.2 release.
 
 ## Implemented
 
@@ -11,10 +11,10 @@ and two container labs; they await the author gate before merging.
 - JSON output for list, start, check and status; local progress and workspaces.
 - Server (Rocky/systemd with private cgroups), Kubernetes (k3s), and offline
   Terraform runtimes; image lockfile and update helper.
-- Five labs on the development branch: lnx-01, k8s-01, tf-01, ctr-01 and ctr-02.
-  Each has a ticket, captures, hints, solution and shortcut scripts. k8s-01 and both
-  container labs include restart-survival checks. The new interview sections explicitly
-  await the author's own answers.
+- Twelve labs: lnx-01/03/05/07, net-01, ctr-01/02, k8s-01/02/06 and tf-01/02.
+  Each has a ticket, captures, hints, solution and shortcut scripts. All except
+  lnx-01 and the Terraform labs have explicit restart-survival checks. New interview
+  sections await the author's own answers.
 - Lab lint, generated README catalog, two-architecture CI and manual soak input.
 - README, contribution guide, security explanation and runtime overview.
 - Public repository: https://github.com/Jyothi0612/devops-by-breaking
@@ -72,9 +72,8 @@ Later documentation-only commits record these results; executable code is unchan
    Keep release evidence tied to the exact tested commit.
 2. Resolve restart semantics and image-cache digest enforcement; record the
    author gate separately from automated checks.
-3. Continue v0.2 with lnx-03,
-   lnx-05, lnx-07, net-01, k8s-02, k8s-06 and tf-02. Capture actual symptoms
-   and prove every shortcut for each lab before counting it as shipped.
+3. Finish v0.2 packaging and usability gates: GHCR images, demo GIF and
+   clean-machine quickstart evidence. The twelve lab implementations are present.
 4. Add GHCR publishing and the demo GIF. Reset, progress tracking and the
    catalog generator are already implemented; do not rebuild them.
 
@@ -95,4 +94,24 @@ still pass. The Docker jobs at `55a2970` passed five runs per lab on amd64 and a
 (20 successful verifications), including restart survival and cleanup.
 See the [development branch soak](https://github.com/Jyothi0612/devops-by-breaking/actions/runs/43764330533).
 
-Use [AUTHOR-CHECKLIST.md](AUTHOR-CHECKLIST.md) to record the two new blind solves.
+Use [AUTHOR-CHECKLIST.md](AUTHOR-CHECKLIST.md) to record all nine new blind solves.
+
+## Remaining v0.2 lab review
+
+The seven additional drafts were reviewed against the plan and exercised locally.
+The Terraform count scenario now ties each token to its service name, so removing
+the middle item actually plans a replacement. Its check accepts repairs that preserve
+the two surviving tokens without requiring one particular HCL construct.
+
+The Kubernetes image-pull lab fails against a local, unavailable registry mirror
+instead of requiring internet access. Setup must observe the expected broken pod
+state, and the ConfigMap lab checks for stable restart counts after repair.
+
+All seven additional labs passed local verification, with shortcut rejection, fixes
+and cleanup. Six include restart checks; Terraform invokes a fresh tool container
+for every command. The existing Kubernetes Service lab also passed against the
+updated runtime. The offline image-pull fixture produced a generated registry
+configuration with only the loopback endpoint, then passed repair and restart.
+
+Full two-architecture CI evidence for this expansion is pending below. The earlier
+50-run result applies only to the five-lab checkpoint, not to these seven additions.

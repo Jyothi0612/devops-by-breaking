@@ -1,0 +1,20 @@
+$ python3 /opt/connection-api/load.py
+FAIL: only 60 of 96 connections received ready (timed out)
+
+$ journalctl -u connection-api -n 8 --no-pager
+Nov 16 02:45:29 prod-web-01 python3[199]: accept failed: Too many open files
+Nov 16 02:45:29 prod-web-01 python3[199]: accept failed: Too many open files
+Nov 16 02:45:29 prod-web-01 python3[199]: accept failed: Too many open files
+Nov 16 02:45:30 prod-web-01 python3[199]: accept failed: Too many open files
+Nov 16 02:45:30 prod-web-01 python3[199]: accept failed: Too many open files
+Nov 16 02:45:30 prod-web-01 python3[199]: accept failed: Too many open files
+Nov 16 02:45:30 prod-web-01 python3[199]: accept failed: Too many open files
+Nov 16 02:45:30 prod-web-01 python3[199]: accept failed: Too many open files
+
+$ cat /etc/security/limits.d/apiworker.conf
+apiworker soft nofile 256
+apiworker hard nofile 256
+
+$ grep "Max open files" /proc/$(systemctl show -p MainPID --value connection-api)/limits
+Max open files            64                   64                   files     
+

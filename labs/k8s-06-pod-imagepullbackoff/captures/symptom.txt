@@ -1,0 +1,10 @@
+$ kubectl -n web get pods
+NAME                        READY   STATUS         RESTARTS   AGE
+frontend-5565569fdd-dvvvj   0/1     ErrImagePull   0          1s
+frontend-6947476699-5czx9   1/1     Running        0          3s
+
+$ kubectl -n web get events --field-selector reason=Failed
+LAST SEEN   TYPE      REASON   OBJECT                          MESSAGE
+1s          Warning   Failed   pod/frontend-5565569fdd-dvvvj   Failed to pull image "nginx:1.29-alpin": failed to pull and unpack image "docker.io/library/nginx:1.29-alpin": failed to resolve reference "docker.io/library/nginx:1.29-alpin": failed to do request: Head "http://127.0.0.1:1/v2/library/nginx/manifests/1.29-alpin?ns=%5BREDACTED%5D": dial tcp 127.0.0.1:1: connect: connection refused
+1s          Warning   Failed   pod/frontend-5565569fdd-dvvvj   Error: ErrImagePull
+0s          Warning   Failed   pod/frontend-5565569fdd-dvvvj   Error: ImagePullBackOff

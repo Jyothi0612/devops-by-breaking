@@ -17,7 +17,8 @@ and Windows that host is Docker's Linux virtual machine, not your computer. On L
 is your machine. What limits the exposure:
 
 - These containers use a **private cgroup namespace** and do **not** mount the host's
-  `/sys/fs/cgroup`, the Docker socket, or any host directory except a read-only image archive.
+  `/sys/fs/cgroup`, the Docker socket, or any host directory except a read-only image archive and, for the image-pull lab, a read-only registry
+  configuration file.
 - No lab publishes a port on anything other than `127.0.0.1`.
 - Lab scripts are short and readable: `labs/<id>/setup.sh` is everything a lab does.
 

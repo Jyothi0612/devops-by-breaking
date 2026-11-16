@@ -58,3 +58,11 @@ support with a bounded wait, so curl and Compose are not extra prerequisites.
 The new Docker labs prove a healthy response before introducing their failure.
 Verification also restarts the repaired container and checks the published endpoint
 again. Every container and network is labelled for normal cleanup.
+
+## Intentionally unavailable images
+
+The image-pull lab supplies a Docker Hub mirror configuration that points to a closed
+loopback port. The k3s runtime mounts that file read-only and disables default endpoint
+fallback. Correct images are preloaded into containerd; the misspelled image fails
+locally. No registry request needs to reach the internet to reproduce the symptom.
+See [K3s registry configuration](https://docs.k3s.io/installation/private-registry).
