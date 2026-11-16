@@ -19,8 +19,9 @@ shift
 printf '%s' "$id" | grep -Eq '^[a-z0-9]+-[0-9]{2}$' || die 'invalid lab id'
 for limit in "$MAX_CMDS" "$TIMEOUT_SECS"; do
   case "$limit" in ''|*[!0-9]*) die 'agent limits must be positive integers' ;; esac
-  [ "$limit" -gt 0 ] 2>/dev/null && [ "$limit" -le 86400 ] 2>/dev/null \
-    || die 'agent limits must be between 1 and 86400'
+  if ! { [ "$limit" -gt 0 ] && [ "$limit" -le 86400 ]; } 2>/dev/null; then
+    die 'agent limits must be between 1 and 86400'
+  fi
 done
 case "$AGENT_NETWORK" in none|bridge) ;; *) die 'AGENT_NETWORK must be none or bridge' ;; esac
 case "$AGENT_IMAGE" in *@sha256:*) ;; *) die 'AGENT_IMAGE must be pinned by digest' ;; esac
