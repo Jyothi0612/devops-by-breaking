@@ -10,6 +10,9 @@ server_name() { printf 'dbb-%s-server\n' "$LAB_ID"; }
 
 server_image() {
   docker image inspect "$DBB_SERVER_IMAGE" >/dev/null 2>&1 && return 0
+  if [ -n "${DBB_SERVER_GHCR:-}" ] && docker pull -q "$DBB_SERVER_GHCR" >/dev/null 2>&1; then
+    docker tag "$DBB_SERVER_GHCR" "$DBB_SERVER_IMAGE" >/dev/null 2>&1 && return 0
+  fi
   ensure_image "$IMG_SERVER_BASE"
   info "building $DBB_SERVER_IMAGE (first run only, about a minute)"
   docker build -q -t "$DBB_SERVER_IMAGE" \

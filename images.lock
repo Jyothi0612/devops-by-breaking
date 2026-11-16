@@ -14,4 +14,5 @@ IMG_BASH32="bash:3.2@sha256:2556c2da19c32c1614d318645c73a7bf64d38be21cf69e98e3ca
 
 # Images built locally from images/<name>/Dockerfile
 DBB_SERVER_IMAGE="dbb/server:1"
+DBB_SERVER_GHCR="ghcr.io/jyothi0612/devops-by-breaking/server:1"
 DBB_TERRAFORM_IMAGE="dbb/terraform:1.17.2"
