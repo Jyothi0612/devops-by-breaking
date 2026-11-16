@@ -94,7 +94,7 @@ ensure_image() {
 rt() {
   local verb="$1"; shift
   case "$RUNTIME" in
-    server|k8s|terraform|docker) "${RUNTIME}_${verb}" "$@" ;;
+    server|k8s|terraform|docker|ansible) "${RUNTIME}_${verb}" "$@" ;;
     *) die "lab $LAB_ID has unknown RUNTIME '$RUNTIME'" ;;
   esac
 }

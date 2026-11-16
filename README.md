@@ -46,6 +46,8 @@ To try these development labs after cloning, run `git switch v0.2/docker-labs`.
 <!-- catalog:start -->
 | Lab | Track | Level | Time | The symptom |
 |---|---|---|---|---|
+| [ans-01](labs/ans-01-playbook-always-changed/) | ansible | L1 | 15 min | Playbook reports changed on every run |
+| [ans-02](labs/ans-02-password-in-ci-logs/) | ansible | L2 | 20 min | Database password appears in CI logs |
 | [ctr-01](labs/ctr-01-container-exits-zero/) | containers | L1 | 10 min | Container exits immediately with code 0 |
 | [ctr-02](labs/ctr-02-published-port-no-response/) | containers | L1 | 10 min | Port published, but the catalogue is unreachable |
 | [k8s-01](labs/k8s-01-service-no-endpoints/) | kubernetes | L1 | 15 min | Service has no endpoints, curl times out |
