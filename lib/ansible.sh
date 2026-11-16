@@ -47,8 +47,12 @@ ansible_start() {
   fi
   chmod 700 "$DBB_WORK/.ssh"
   chmod 600 "$DBB_WORK/.ssh/id_ed25519"
+  # Rocky ships /etc/shadow as mode 000, so PAM's unix_chkpwd helper needs DAC override
+  # to read it. Ubuntu 24.04+ hosts confine any binary at that path with their own
+  # AppArmor unix-chkpwd profile, which denies that capability, so root's SSH login
+  # fails with "Access denied ... by PAM account configuration". 0400 needs no override.
   docker exec "$(ansible_node)" bash -c \
-    'mkdir -p /root/.ssh && chmod 700 /root/.ssh && ssh-keygen -A && systemctl enable -q --now sshd'
+    'chmod 0400 /etc/shadow && mkdir -p /root/.ssh && chmod 700 /root/.ssh && ssh-keygen -A && systemctl enable -q --now sshd'
   docker cp -q "$DBB_WORK/.ssh/id_ed25519.pub" "$(ansible_node):/root/.ssh/authorized_keys"
   docker exec "$(ansible_node)" bash -c \
     'chown root:root /root/.ssh/authorized_keys && chmod 600 /root/.ssh/authorized_keys'
@@ -75,16 +79,6 @@ ansible_diag() {
   {
     printf -- '--- managed-node sshd log ---\n'
     docker exec "$(ansible_node)" journalctl -u sshd --no-pager -n 40 2>&1 || true
-    printf -- '--- managed-node state ---\n'
-    docker exec "$(ansible_node)" sh -c 'systemctl is-system-running; systemctl --failed --no-legend; ls -l /run/nologin /etc/nologin; journalctl -u systemd-user-sessions --no-pager -n 15' 2>&1 || true
-    printf -- '--- sshd -d on port 2222 ---\n'
-    docker exec -d "$(ansible_node)" sh -c '/usr/sbin/sshd -d -o LogLevel=DEBUG3 -p 2222 >/tmp/sshd-debug.log 2>&1'
-    sleep 2
-    ans_run --entrypoint ssh "$DBB_ANSIBLE_IMAGE" -p 2222 -i /work/.ssh/id_ed25519 \
-      -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o BatchMode=yes \
-      root@managed-node true 2>&1 || true
-    sleep 1
-    docker exec "$(ansible_node)" sh -c 'grep -iE "pam|account|denied|selinux|shadow|expire|fatal|error" /tmp/sshd-debug.log | head -40; grep ^root: /etc/shadow; cat /etc/pam.d/password-auth | grep -v "^#"; ls -l /etc/shadow /usr/sbin/unix_chkpwd; journalctl --no-pager -n 300 | grep -iE "pam|chkpwd|sshd-session|audit" | tail -25' 2>&1 || true
     printf -- '--- /root/.ssh ---\n'
     docker exec "$(ansible_node)" ls -lan /root/.ssh 2>&1 || true
   } >&2
