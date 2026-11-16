@@ -41,6 +41,8 @@ Twelve labs are implemented on this development branch. The nine new v0.2 labs a
 the [author solve-through gate](docs/AUTHOR-CHECKLIST.md). See [build progress](docs/PROGRESS.md) for completed
 work, verification evidence and the remaining release gates.
 
+To try these development labs after cloning, run `git switch v0.2/docker-labs`.
+
 <!-- catalog:start -->
 | Lab | Track | Level | Time | The symptom |
 |---|---|---|---|---|
