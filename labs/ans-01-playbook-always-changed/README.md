@@ -33,8 +33,12 @@ managed-node               : ok=3    changed=3    unreachable=0    failed=0    s
 
 `./dbb check` verifies each of these:
 
-- [ ] `site.yml` uses idempotent modules (no `changed_when: false`)
-- [ ] First run creates `/opt/catalogue/app.conf` (`env=prod`, mode `0644`) and second run reports `changed=0`
+- [ ] Missing `/opt/catalogue/app.conf` is created with `env=prod`, mode `0644`, and the run reports a change
+- [ ] Content and permission drift is repaired and reported; the following run reports `changed=0`
+
+The check deliberately removes and alters this lab's configuration to test repair.
+Read-only tasks may use `changed_when: false`; actual configuration changes must
+still be reported.
 
 ## Predict first
 

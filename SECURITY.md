@@ -41,3 +41,17 @@ access to nothing, and are written so they cannot be mistaken for real credentia
 
 Open a GitHub issue, or use GitHub's private vulnerability reporting on this repository
 for anything you would rather not post publicly.
+
+## Agent harness
+
+The agent container receives the ticket and a restricted broker socket, not the
+repository, host home or Docker socket. The trusted supervisor alone controls the
+Docker daemon. See [agent mode](docs/AGENTS.md) for its mounts and execution limits.
+
+This is solution-file separation for cooperative troubleshooting, **not isolation
+from malicious lab commands**. The server and Kubernetes labs are privileged, and
+root-level access inside them can undermine host isolation. Run adversarial agents
+in a disposable VM. Agent images must be trusted and must not contain solutions or
+credentials. Docker-runtime labs are rejected until a constrained operation
+interface is available. Result files may include sensitive agent output; review
+before sharing them.

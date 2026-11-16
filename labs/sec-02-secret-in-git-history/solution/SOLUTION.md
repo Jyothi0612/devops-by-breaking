@@ -59,9 +59,12 @@ and assumes it is gone — until a secret scanner or attacker pulls the earlier 
 
 ## Say it in an interview
 
-Author gate pending: write your own 15-second answer after solving blind. Cover why
-`git rm` does not remove secrets from history, why you rotate first, and how you
-purge history and prevent recurrence.
+*AI-drafted practice answer — review and adapt to your own understanding.*
+
+“Deleting a file in a new commit doesn't remove it from Git history. I'd revoke or
+rotate the secret first, then coordinate history cleanup and check all relevant refs.
+I'd add ignore rules and secret scanning too. Rewriting our copy can't make other
+people's clones or cached copies forget the old secret.”
 
 ## Further reading
 

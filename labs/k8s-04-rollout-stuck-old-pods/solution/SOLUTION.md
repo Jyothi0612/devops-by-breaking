@@ -62,9 +62,12 @@ indefinitely.
 
 ## Say it in an interview
 
-Author gate pending: write your own 15-second answer after solving blind. Cover why
-Kubernetes kept the old pods up, how `describe pod` showed the wrong probe port, and
-why deleting the probe is the wrong fix.
+*AI-drafted practice answer — review and adapt to your own understanding.*
+
+“I'd compare the old and new pods and inspect readiness events. Here the new probe
+points at the wrong port, so the rollout can't progress safely. I'd fix the probe and
+wait for rollout completion. Removing the probe might clear the symptom, but it also
+removes the protection against sending traffic to unready pods.”
 
 ## Further reading
 

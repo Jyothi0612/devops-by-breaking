@@ -75,9 +75,12 @@ shell `PATH`, `$HOME`, or `PWD`.
 
 ## Say it in an interview
 
-Author gate pending: write your own 15-second answer after solving blind. Cover the
-symptom, why cron's minimal `PATH` and working directory broke the script, how the log
-confirmed it, and how you prevent it.
+*AI-drafted practice answer — review and adapt to your own understanding.*
+
+“I'd compare the scheduled environment with the interactive one. Here cron can't find
+the helper, and the script also assumes a working directory. I'd use absolute paths for
+both, then verify an actual scheduled run produces the backup. I'd monitor backup
+freshness so a silent cron failure doesn't go unnoticed.”
 
 ## Further reading
 

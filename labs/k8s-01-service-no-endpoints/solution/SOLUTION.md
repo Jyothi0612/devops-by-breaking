@@ -4,9 +4,10 @@
 
 A Service finds its pods with a **label selector**. The "tidy up labels" change set the
 Service selector to `app=web-frontend`, but the pods are labelled `app=web`. Nothing
-matches, so the Service has no endpoints. The ClusterIP still exists and accepts
-connections that go nowhere, which is why the client sees a timeout and not "connection
-refused".
+matches, so the Service has no backend endpoints. The ClusterIP still exists, but
+there is no backend to forward to. This lab captures a timeout; other network proxy
+implementations or rules may produce an immediate rejection instead. A ClusterIP
+is not itself an application listening socket.
 
 Kubernetes reports no error for this. A selector that matches nothing is valid.
 
@@ -61,7 +62,7 @@ Service selector is the thing that was changed, so it is the thing to change bac
 Catch it before merge. A CI step that fails when a Service selects nothing:
 
 ```
-# after `kubectl apply --dry-run=server` or in a preview namespace
+# after applying the manifests and waiting for pods in a preview namespace
 for svc in $(kubectl -n "$NS" get svc -o name); do
   sel=$(kubectl -n "$NS" get "$svc" -o go-template='{{range $k,$v := .spec.selector}}{{$k}}={{$v}},{{end}}' | sed 's/,$//')
   [ -z "$sel" ] && continue
@@ -69,16 +70,24 @@ for svc in $(kubectl -n "$NS" get svc -o name); do
 done
 ```
 
-And alert on it in production (kube-state-metrics):
+For production, configure a blackbox exporter HTTP probe from a location that can
+reach the Service. For example, with a scrape job named `shop-web-http` and an HTTP
+module accepting 2xx responses:
 
-```
-- alert: ServiceHasNoEndpoints
-  expr: sum by (namespace, service) (kube_endpoint_address{ready="true"}) == 0
+```yaml
+- alert: ShopWebUnavailable
+  expr: probe_success{job="shop-web-http"} == 0
   for: 5m
 ```
 
-Generating the Service and the Deployment from the same template (Helm, Kustomize
-`commonLabels`) removes the chance of the two drifting apart.
+This is an availability alert, not a diagnosis of empty endpoints. Investigate
+EndpointSlices, selectors and readiness after it fires. Monitor exporter health
+and missing targets separately; this lab does not install monitoring.
+
+Server-side dry-run validates a request but does not create the candidate pods or
+Services. The selection check above needs an applied preview environment.
+Generating related labels and selectors from shared values reduces drift; it does
+not remove the need to test them.
 
 ## In production this looks like
 
@@ -89,12 +98,12 @@ Generating the Service and the Deployment from the same template (Helm, Kustomiz
 
 ## Say it in an interview
 
-"The pods were Running but calls to the Service timed out, so I checked the endpoints
-first, and they were empty. That points to the selector. `describe svc` showed it
-selecting `app=web-frontend` while the pods were labelled `app=web`, after a label
-clean-up. I fixed the Service selector, not the pod labels, because relabelling pods
-orphans them from their Deployment. To prevent it I'd add a CI check that every Service
-selects at least one pod, and an alert on Services with zero endpoints."
+*AI-drafted practice answer — review and adapt to your own understanding.*
+
+“If pods look healthy but a Service fails, I'd check its EndpointSlices and compare its
+selector with the pod labels. Here they don't match. I'd correct the Service manifest
+and test through the Service again. Relabelling individual pods is fragile because their
+controller recreates them from its template.”
 
 ## Further reading
 
@@ -102,3 +111,5 @@ selects at least one pod, and an alert on Services with zero endpoints."
 - Kubernetes docs: EndpointSlices
 - Kubernetes docs: Debug Services
 - Kubernetes docs: Labels and Selectors
+
+- [Prometheus blackbox exporter](https://github.com/prometheus/blackbox_exporter)

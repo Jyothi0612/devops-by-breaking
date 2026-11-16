@@ -44,9 +44,12 @@ resolve host`) until UDP/TCP 53 to CoreDNS is explicitly allowed.
 
 ## Say it in an interview
 
-Author gate pending: write your own 15-second answer after solving blind. Cover why
-NetworkPolicies are additive, why DNS egress (port 53) is needed alongside port 80,
-and how `rogue` stays blocked.
+*AI-drafted practice answer — review and adapt to your own understanding.*
+
+“With default-deny networking, I'd test DNS and the application connection separately.
+Here the frontend needs DNS egress, API egress, and matching API ingress. I'd add scoped
+allow policies, then test both the permitted frontend and a blocked pod. A successful
+request alone doesn't prove the policy still isolates other workloads.”
 
 ## Further reading
 

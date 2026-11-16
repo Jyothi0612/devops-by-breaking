@@ -74,9 +74,12 @@ until checking `/proc/<pid>/limits` and the unit's `LimitNOFILE=`.
 
 ## Say it in an interview
 
-Author gate pending: write your own 15-second answer after solving blind. Cover why
-`limits.conf` did not apply to a systemd unit, how `/proc/<pid>/limits` proved it, and
-how you fixed it with a drop-in override without running as root.
+*AI-drafted practice answer — review and adapt to your own understanding.*
+
+“I'd check the running process's limits in /proc and compare them with the systemd unit.
+Here the service gets LimitNOFILE from systemd, not the PAM limits file. I'd set an
+appropriate limit in a drop-in, reload systemd, restart the service, and repeat the load
+test without changing its non-root user.”
 
 ## Further reading
 

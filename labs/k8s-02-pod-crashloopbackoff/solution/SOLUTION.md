@@ -68,9 +68,12 @@ on the next pod restart.
 
 ## Say it in an interview
 
-Author gate pending: write your own 15-second answer after solving blind. Cover how
-`kubectl logs --previous` exposed the missing env var, why `envFrom` allowed the pod
-to start, and how you fixed the ConfigMap and restarted the pod.
+*AI-drafted practice answer — review and adapt to your own understanding.*
+
+“I'd start with the previous container logs. Here they show QUEUE_URL is missing because
+the ConfigMap key was renamed. envFrom loads the keys that exist; it doesn't know what
+the application requires. I'd correct the key, recreate the pods to refresh their
+environment, and check that restarts stop.”
 
 ## Further reading
 

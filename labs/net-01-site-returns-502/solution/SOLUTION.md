@@ -49,17 +49,25 @@ Then run `./dbb check` from the repository root.
 ## Prevention
 
 Run an end-to-end HTTP smoke check through nginx in CI/deploy pipelines before
-marking a release complete, and alert on `5xx` responses at the proxy:
+marking a release complete. Configure Prometheus blackbox exporter with an HTTP
+module that accepts only 2xx responses and probes the URL **through nginx**. With
+the scrape job named `orders-http`, alert on probe failures:
 
 ```yaml
-- alert: NginxUpstream502Spike
-  expr: sum(rate(nginx_http_requests_total{status="502"}[2m])) > 0
+- alert: OrdersHttpProbeFailed
+  expr: probe_success{job="orders-http"} == 0
   for: 1m
   labels:
     severity: page
   annotations:
-    summary: nginx is returning 502 Bad Gateway from upstream
+    summary: Orders HTTP endpoint is failing through nginx
 ```
+
+This detects failed HTTP probes, including 502s; inspect nginx logs to determine
+the cause. The standard nginx OSS exporter exposes total requests without a status
+label, so it cannot supply a per-502 counter. Status-specific alerts require a
+configured access-log exporter or other suitable instrumentation. Monitor exporter
+scrape health and missing targets separately. Monitoring is not installed by this lab.
 
 ## In production this looks like
 
@@ -69,11 +77,17 @@ the backend pods/processes report healthy.
 
 ## Say it in an interview
 
-Author gate pending: write your own 15-second answer after solving blind. Cover what
-`502` means, how `/var/log/nginx/error.log` and `ss -tlnp` proved the port mismatch,
-and how you prevent it on deploy.
+*AI-drafted practice answer — review and adapt to your own understanding.*
+
+“For a 502, I'd check nginx's error log and test the backend directly. Here nginx points
+at port 8080, but the backend listens on 8081. I'd correct the upstream, validate the
+config, and reload nginx. The final test must go through the proxy; a healthy backend
+alone doesn't prove that path works.”
 
 ## Further reading
 
 - [nginx: ngx_http_proxy_module](https://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_pass)
 - [MDN: 502 Bad Gateway](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/502)
+
+- [Prometheus blackbox exporter](https://github.com/prometheus/blackbox_exporter)
+- [NGINX exporter metrics](https://github.com/nginx/nginx-prometheus-exporter#metrics-for-nginx-oss)

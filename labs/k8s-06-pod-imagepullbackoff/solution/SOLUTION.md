@@ -67,9 +67,12 @@ new pod in `ImagePullBackOff`.
 
 ## Say it in an interview
 
-Author gate pending: write your own 15-second answer after solving blind. Cover how
-`kubectl describe pod` reveals the bad image tag, why the old pod stayed up, and why
-you pin explicit tags rather than `latest`.
+*AI-drafted practice answer — review and adapt to your own understanding.*
+
+“I'd read the pod events and check the exact image reference before changing credentials
+or networking. Here the tag is wrong. I'd use the intended pinned image, wait for the
+pod to become Ready, and verify it survives recreation. Switching to latest makes the
+deployment less reproducible and doesn't establish that it's the right application.”
 
 ## Further reading
 

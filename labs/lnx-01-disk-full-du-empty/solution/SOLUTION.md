@@ -97,11 +97,12 @@ never `rm`.
 
 ## Say it in an interview
 
-"`df` showed the volume full but `du` showed it empty, which told me a deleted file was
-still held open. `lsof +L1` showed the service holding a 64 MB deleted log. The service
-could not be restarted, so I reloaded it to make it re-open its log, which released the
-space. The real fix was a logrotate rule with a reload in `postrotate`, plus an alert
-that predicts the disk filling instead of firing at 100%."
+*AI-drafted practice answer — review and adapt to your own understanding.*
+
+“When df shows a full filesystem but du can't find the space, I'd look for deleted files
+still held open with lsof +L1. Here the service can reopen its log on reload, which
+releases the space without interrupting the batch. I'd then configure rotation with a
+reopen step and monitor filesystem capacity.”
 
 ## Further reading
 

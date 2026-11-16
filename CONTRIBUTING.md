@@ -10,8 +10,13 @@ Your pull request is ready when these pass:
 ```
 tools/lint-lab.sh
 bash tests/proof.sh
+bash tests/agent-run.sh
+bash tests/paths.sh
 ./dbb verify <your-lab-id>
 ```
+
+For Ansible checker changes, also run `bash tests/ansible-content.sh` (requires Docker
+and no active learner lab). This tests a valid playbook containing a read-only task.
 
 `verify` proves five things: the lab starts broken, every shortcut in `solution/cheats/`
 is rejected, `solution/fix.sh` passes the check, the fix survives `survive.sh` (if the
@@ -66,3 +71,17 @@ Check scripts must finish successfully and emit objectives through `check`. A no
 script exit or no objectives is a checker error (exit 2), not a broken-lab result
 (exit 1). Cheat and restart scripts must also exit successfully for `verify` to
 accept their evidence.
+
+Agent-mode changes also require the broker unit tests and Docker integration tests:
+
+```sh
+. ./images.lock
+docker run --rm --network none -v "$PWD:/repo:ro" -w /repo "$IMG_ANSIBLE_BASE" python tests/agent_broker.py
+bash tests/agent-integration.sh
+bash tests/agent-runtimes.sh tf-01
+bash tests/agent-runtimes.sh ans-01
+bash tests/agent-runtimes.sh k8s-01
+```
+
+Run these with no active learner lab. The tests include reference repairs and do
+not count as blind solves or AI benchmark results.
