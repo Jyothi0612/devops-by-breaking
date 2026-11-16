@@ -84,7 +84,7 @@ ansible_diag() {
       -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o BatchMode=yes \
       root@managed-node true 2>&1 || true
     sleep 1
-    docker exec "$(ansible_node)" sh -c 'grep -iE "pam|account|denied|selinux|shadow|expire|fatal|error" /tmp/sshd-debug.log | head -40; grep ^root: /etc/shadow; cat /etc/pam.d/password-auth | grep -v "^#"; getenforce 2>&1; ls /sys/fs/selinux 2>&1 | head -3' 2>&1 || true
+    docker exec "$(ansible_node)" sh -c 'grep -iE "pam|account|denied|selinux|shadow|expire|fatal|error" /tmp/sshd-debug.log | head -40; grep ^root: /etc/shadow; cat /etc/pam.d/password-auth | grep -v "^#"; ls -l /etc/shadow /usr/sbin/unix_chkpwd; journalctl --no-pager -n 300 | grep -iE "pam|chkpwd|sshd-session|audit" | tail -25' 2>&1 || true
     printf -- '--- /root/.ssh ---\n'
     docker exec "$(ansible_node)" ls -lan /root/.ssh 2>&1 || true
   } >&2
